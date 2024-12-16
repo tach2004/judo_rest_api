@@ -73,3 +73,14 @@ print("Wassermenge:",str(get_val(res["data"],0,4)/1000)+" Kubikmeter")
 res = {"data": "2EDC0000",}
 print("Weichwassermenge:",str(get_val(res["data"],0,4)/1000)+" Kubikmeter")
 
+"""
+Statistik-Device:
+Auswahl Tag, anzeige Tagesstatistik
+Auswahl KW: Anzeige KW-Statistik
+...
+Date-Picker?
+
+Verbrauchszähler: Tagesstatistik addieren und als increasing darstellen
+
+Momentanverbrauch: Differenzen Wassermenge je Zeiteinheit (scanintervall) auftragen
+"""
