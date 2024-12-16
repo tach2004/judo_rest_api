@@ -1,0 +1,105 @@
+"""init."""
+
+import json
+import logging
+# from pathlib import Path
+
+from homeassistant.config_entries import ConfigEntry
+from homeassistant.core import HomeAssistant
+
+from .configentry import MyConfigEntry, MyData
+from .const import CONF, CONST, DEVICETYPES
+from .coordinator import MyCoordinator
+
+logging.basicConfig()
+log = logging.getLogger(__name__)
+
+PLATFORMS: list[str] = [
+    "number",
+    "select",
+    "sensor",
+    #    "switch",
+]
+
+
+# Return boolean to indicate that initialization was successful.
+# return True
+async def async_setup_entry(hass: HomeAssistant, entry: MyConfigEntry) -> bool:
+    """Set up entry."""
+    # Store an instance of the "connecting" class that does the work of speaking
+    # with your actual devices.
+    # hass.data.setdefault(DOMAIN, {})[entry.entry_id] = hub.Hub(hass, entry.data["host"])
+    mbapi = ModbusAPI(config_entry=entry)
+
+    itemlist = []
+
+    for device in DEVICELISTS:
+        for item in device:
+            itemlist.append(item)
+
+    coordinator = MyCoordinator(
+        hass=hass, my_api=mbapi, api_items=itemlist, p_config_entry=entry
+    )
+    await coordinator.async_config_entry_first_refresh()
+
+    entry.runtime_data = MyData(
+        modbus_api=mbapi,
+        webif_api=webapi,
+        config_dir=hass.config.config_dir,
+        hass=hass,
+        coordinator=coordinator,
+        powermap=None,
+    )
+
+    # see https://community.home-assistant.io/t/config-flow-how-to-update-an-existing-entity/522442/8
+    entry.async_on_unload(entry.add_update_listener(update_listener))
+
+    # This creates each HA object for each platform your device requires.
+    # It's done by calling the `async_setup_entry` function in each platform module.
+    await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
+
+    log.info("Init done")
+
+    return True
+
+
+async def update_listener(hass: HomeAssistant, entry: ConfigEntry) -> None:
+    """Update listener."""
+    await hass.config_entries.async_reload(
+        entry.entry_id
+    )  # list of entry_ids created for file
+
+
+async def async_migrate_entry(hass: HomeAssistant, config_entry: MyConfigEntry):
+    """Migrate old entry."""
+
+    new_data = {**config_entry.data}
+
+    if config_entry.version > 1:
+        # This means the user has downgraded from a future version
+        return True
+
+    # to ensure all update paths we have to check every version to not overwrite existing entries
+    if config_entry.version < 1:
+        log.warning("Old Version detected")
+
+    hass.config_entries.async_update_entry(
+        config_entry, data=new_data, minor_version=1, version=1
+    )
+    return True
+
+
+async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
+    """Unload entry."""
+    # This is called when an entry/configured device is to be removed. The class
+    # needs to unload itself, and remove callbacks. See the classes for further
+    # details
+    entry.runtime_data.modbus_api.close()
+    unload_ok = await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
+    if unload_ok:
+        try:
+            hass.data[entry.data[CONF.PREFIX]].pop(entry.entry_id)
+        except KeyError:
+            log.warning("KeyError: %s", str(entry.data[CONF.PREFIX]))
+
+    return unload_ok
