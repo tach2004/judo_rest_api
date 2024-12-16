@@ -19,8 +19,6 @@ class ConfConstants:
     PASSWORD = CONF_PASSWORD
     USERNAME = CONF_USERNAME
     DEVICE_POSTFIX = "Device-Postfix"
-    NAME_DEVICE_PREFIX = "Name-Device-Prefix"
-    NAME_TOPIC_PREFIX = "Name-Topic-Prefix"
 
 CONF = ConfConstants()
 
