@@ -11,9 +11,6 @@ This integration lets you monitor and control your Judo water treatment device l
 
 ## Installation
 
-<img width="414" alt="image" src="https://github.com/user-attachments/assets/da1ceee4-129d-45e9-9fec-400949b3f257" />
-
-
 ### HACS (manually add Repository)
 
 Add this repository to HACS.
@@ -41,7 +38,7 @@ custom_components
 │   └── sensor.py  
 ```
 ## Configuration
-![image](https://github.com/user-attachments/assets/2a94dcf0-fca3-4658-960f-b2969a4b656e)
+<img width="414" alt="image" src="https://github.com/user-attachments/assets/da1ceee4-129d-45e9-9fec-400949b3f257" />
 
 The only mandatory parameters are:
 * The IP-Address of your Judo water treatment device. The port should be ok at default (80) unless you changed it in the configuration of the connectivity module.
