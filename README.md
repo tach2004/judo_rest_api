@@ -10,7 +10,8 @@ This integration lets you monitor and control your Judo water treatment device l
 
 ## Installation
 
-[![Start Config Flow](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start?domain=judo_rest_api)
+<img width="414" alt="image" src="https://github.com/user-attachments/assets/da1ceee4-129d-45e9-9fec-400949b3f257" />
+
 
 ### HACS (manually add Repository)
 
