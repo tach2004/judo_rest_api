@@ -1,0 +1,106 @@
+{
+    "config": {
+        "abort": {
+            "already_configured": "Account is already configured"
+        },
+        "error": {
+            "cannot_connect": "Failed to connect",
+            "invalid_auth": "Invalid authentication",
+            "unknown": "Unexpected error"
+        },
+        "step": {
+            "user": {
+                "data": {
+                    "Device-Postfix": "Device postfix",
+                    "host": "Host name or IP address",
+                    "port": "HTTP Port",
+                    "username": "User name",
+                    "password": "Password"
+                }
+            }
+        }
+    },
+    "device": {
+        "dev_statistics": {
+            "name": "Judo Statistics{postfix}"
+        },
+        "dev_system": {
+            "name": "Judo System{postfix}"
+        },
+        "dev_unknown": {
+            "name": "Judo Unknown{postfix}"
+        }
+    },
+    "entity": {
+        "number": {
+            "bivalenztemp": {
+                "name": "{prefix}Bivalenztemperatur"
+            }
+        },
+        "select": {
+            "hz_operationmode": {
+                "name": "{prefix}Betriebsart",
+                "state": {
+                    "hz_operationmode_lowering": "Absenkbetrieb",
+                    "hz_operationmode_automatic": "Automatik",
+                    "hz_operationmode_normal": "Normal",
+                    "hz_operationmode_standby": "Standby",
+                    "hz_operationmode_comfort": "Komfort"
+                }
+            }
+        },
+        "sensor": {
+            "device_number": {
+                "name": "Device number"
+            },
+            "software_version": {
+                "name": "Software version"
+            },
+            "water_hardeness": {
+                "name": "Water hardeness"
+            },
+            "day_statistics": {
+                "name": "Statistics"
+            },
+            "device_type": {
+                "name": "Device Type",
+                "state": {
+
+                    "i_soft_safe_plus": "i-soft SAFE+",
+                    "i_soft_k_safe_plus": "i-soft K SAFE+",
+                    "i_soft_pro": "i-soft PRO",
+                    "i_soft_pro_l": "i-soft PRO L",
+                    "i_soft": "i-soft",
+                    "i_soft_k": "i-soft K",
+                    "softwell_p": "SOFTwell P",
+                    "softwell_s": "SOFTwell S",
+                    "softwell_k": "SOFTwell K",
+                    "softwell_kp": "SOFTwell KP",
+                    "softwell_ks": "SOFTwell KS",
+                    "zewa_prom_i_safe": "ZEWA/PROM i-SAFE (FILT)",
+                    "i_dos_eco": "i-dos eco",
+                    "i_fill": "i-fill"
+                }
+            },
+            "salt_storage_mass": {
+                "name": "Salt storage mass"
+            },
+            "salt_storage_days": {
+                "name": "Salt storage days"
+            }
+        }
+    },
+    "options": {
+        "step": {
+            "init": {
+                "data": {
+                    "api_scan_interval": "Api scan interval (default = 300 sec)",
+                    "language": "Language (default = en)",
+                    "mode": "Mode(default = api)",
+                    "scan_interval": "Web scraping interval (default = 1800 sec)"
+                }
+            }
+        }
+    },
+    "title": "Judo Water Treatment"
+}

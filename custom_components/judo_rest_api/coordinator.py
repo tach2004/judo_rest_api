@@ -1,4 +1,4 @@
-"""The Update Coordinator for the ModbusItems."""
+"""The Update Coordinator for the RestItems."""
 
 import asyncio
 from datetime import timedelta
@@ -9,11 +9,12 @@ from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 
 from .configentry import MyConfigEntry
 from .const import CONST, TYPES, DEVICES, CONF
-from .items import ModbusItem
-from .modbusobject import ModbusAPI, ModbusObject
+from .items import RestItem
+from .restobject import RestAPI, RestObject
 
 logging.basicConfig()
 log = logging.getLogger(__name__)
+
 
 class MyCoordinator(DataUpdateCoordinator):
     """My custom coordinator."""
@@ -46,11 +47,16 @@ class MyCoordinator(DataUpdateCoordinator):
 
     async def get_value(self, rest_item: RestItem):
         """Read a value from the rest API"""
-        rest_item.state = self._rest_api.get_val(rest_item)
+
+        ro = RestObject(self._rest_api, rest_item)
+        if ro is None:
+            rest_item.state = None
+        else:
+            rest_item.state = await ro.value
         return rest_item.state
 
     def get_value_from_item(self, translation_key: str) -> int:
-        """Read a value from another modbus item"""
+        """Read a value from another rest item"""
         for _useless, item in enumerate(self._restitems):
             if item.translation_key == translation_key:
                 return item.state
@@ -65,6 +71,7 @@ class MyCoordinator(DataUpdateCoordinator):
         This method will be called automatically during
         coordinator.async_config_entry_first_refresh.
         """
+        await self._rest_api.login()
         await self._rest_api.connect()
 
     async def fetch_data(self, idx=None):
@@ -82,7 +89,10 @@ class MyCoordinator(DataUpdateCoordinator):
 
         for index in to_update:
             item = self._restitems[index]
-            await self.get_value(item)
+            try:
+                await self.get_value(item)
+            except Exception:
+                log.warning("connection to Judo Water treatment failed")
 
     async def _async_update_data(self):
         """Fetch data from API endpoint.
@@ -96,14 +106,10 @@ class MyCoordinator(DataUpdateCoordinator):
             # Grab active context variables to limit data required to be fetched from API
             # Note: using context is not required if there is no need or ability to limit
             # data retrieved from API.
-            try:
-                # listening_idx = set(self.async_contexts())
-                return await self.fetch_data()  # !!!!!using listening_idx will result in some entities nevwer updated !!!!!
-            except ModbusException:
-                log.warning("connection to the water treatment failed")
+            # listening_idx = set(self.async_contexts())
+            return await self.fetch_data()  # !!!!!using listening_idx will result in some entities nevwer updated !!!!!
 
     @property
-    def modbus_api(self) -> str:
-        """Return modbus_api."""
-        return self._modbus_api
-
+    def rest_api(self):
+        """Return rest_api."""
+        return self._rest_api

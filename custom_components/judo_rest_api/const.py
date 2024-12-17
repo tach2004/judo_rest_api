@@ -14,11 +14,13 @@ from homeassistant.const import (
 @dataclass(frozen=True)
 class ConfConstants:
     """Constants used for configurastion"""
+
     HOST = CONF_HOST
     PORT = CONF_PORT
     PASSWORD = CONF_PASSWORD
     USERNAME = CONF_USERNAME
     DEVICE_POSTFIX = "Device-Postfix"
+
 
 CONF = ConfConstants()
 
@@ -31,7 +33,6 @@ class MainConstants:
     SCAN_INTERVAL = timedelta(seconds=30)
     UNIQUE_ID = "unique_id"
     APPID = 100
-    DEF_PREFIX = "judo_rest_api"
 
 
 CONST = MainConstants()
@@ -41,9 +42,8 @@ CONST = MainConstants()
 class FormatConstants:
     """Format constants."""
 
-    TEMPERATUR = "temperature"
-    PERCENTAGE = "percentage"
     NUMBER = "number"
+    TEXT = "text"
     STATUS = "status"
     UNKNOWN = "unknown"
 
@@ -61,8 +61,20 @@ class TypeConstants:
     NUMBER = "Number"
     NUMBER_RO = "Number_RO"
 
+
 TYPES = TypeConstants()
 
+
+@dataclass(frozen=True)
+class DeviceConstants:
+    """Device constants."""
+
+    SYS = "dev_system"
+    ST = "dev_statistics"
+    UK = "dev_unknown"
+
+
+DEVICES = DeviceConstants()
 
 COMMANDS = {
     "Geraetetyp": "FF00",
@@ -74,7 +86,6 @@ COMMANDS = {
     "Wunschwasserhaerte": "5100",
     "Salzvorrat": "5600",
     "Salzreichweite": "5700",
-    "Salzreichweite": "5700",
     "Gesamtwassermenge": "2800",
     "Weichwassermenge": "2900",
     "Tagesstatistik": "FB00",
@@ -84,7 +95,7 @@ COMMANDS = {
 }
 
 
-DEVICESTYPES = {
+DEVICETYPES = {
     "33": "i-soft SAFE+",
     "42": "i-soft K SAFE+",
     "58": "i-soft PRO",
