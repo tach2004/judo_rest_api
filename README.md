@@ -14,7 +14,7 @@ This integration lets you monitor and control your Judo water treatment device l
 
 Add this repository to HACS.
 * In the HACS GUI, select "Custom repositories"
-* Enter the following repository URL: https://github.com/OStrama/judo_rest_api/releases
+* Enter the following repository URL: https://github.com/OStrama/judo_rest_api
 * Category: Integration
 * After adding the integration, restart Home Assistant.
 * Now under Configuration -> Integrations, "Weishaupt Modbus Integration" should be available.
