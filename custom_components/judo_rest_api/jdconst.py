@@ -4,6 +4,9 @@ from homeassistant.components.sensor import SensorDeviceClass, SensorStateClass
 from homeassistant.const import (
     UnitOfEnergy,
     UnitOfVolumeFlowRate,
+    UnitOfMass,
+    UnitOfVolume,
+    UnitOfTime,
 )
 
 from .const import DEVICES, FORMATS, TYPES
@@ -59,19 +62,68 @@ PARAMS_FLOWRATE: dict = {
     "step": 0.1,
     "divider": 100,
     "precision": 2,
-    "unit": UnitOfVolumeFlowRate.CUBIC_METERS_PER_HOUR,
+    "unit": UnitOfVolumeFlowRate.LITERS_PER_MINUTE,
     "stateclass": SensorStateClass.MEASUREMENT,
 }
 
-PARAMS_WATER: dict = {
+PARAMS_MASS: dict = {
     "min": 0,
-    "max": 999999999999,
-    "deviceclass": SensorDeviceClass.ENERGY,
-    "precision": 0,
-    "unit": UnitOfEnergy.KILO_WATT_HOUR,
-    "stateclass": SensorStateClass.TOTAL_INCREASING,
+    "max": 100,
+    "step": 1,
+    "divider": 1000,
+    "preciosion": 2,
+    "unit": UnitOfMass.KILOGRAMS,
+    "stateclass": SensorStateClass.MEASUREMENT,
+    "icon": "mdi:weight-kilogram"
 }
 
+PARAMS_DAYS: dict = {
+    "step": 1,
+    "preciosion": 0,
+    "unit": UnitOfTime.DAYS,
+    "stateclass": SensorStateClass.MEASUREMENT,
+    "icon": "mdi:timelapse"
+}
+
+PARAMS_MINUTES: dict = {
+    "step": 1,
+    "preciosion": 0,
+    "unit": UnitOfTime.MINUTES,
+    "stateclass": SensorStateClass.MEASUREMENT,
+    "icon": "mdi:timelapse"
+}
+
+PARAMS_HOURS: dict = {
+    "step": 1,
+    "preciosion": 0,
+    "unit": UnitOfTime.HOURS,
+    "stateclass": SensorStateClass.MEASUREMENT,
+    "icon": "mdi:timelapse"
+}
+
+PARAMS_GDH: dict = {
+    "step": 1,
+    "preciosion": 1,
+    "unit": "°dH",
+    "stateclass": SensorStateClass.MEASUREMENT,
+    "icon": "mdi:water-opacity"
+}
+
+
+PARAMS_QBM: dict = {
+    "min": 0,
+    "max": 100,
+    "step": 1,
+    "divider": 1000,
+    "preciosion": 3,
+    "unit": UnitOfVolume.CUBIC_METERS,
+    "stateclass": SensorStateClass.TOTAL_INCREASING,
+    "icon": "mdi:water"
+}
+
+PARAMS_CONTACT: dict = {
+    "icon": "mdi:phone"
+}
 
 
 # pylint: disable=line-too-long
@@ -81,13 +133,20 @@ REST_SYS_ITEMS: list[RestItem] = [
     RestItem( address_read="FF00", read_bytes = 2, read_index=0, mformat=FORMATS.STATUS, mtype=TYPES.SENSOR, device=DEVICES.SYS, resultlist=UNIT_TYPE, translation_key="device_type"),
     RestItem( address_read="0600", read_bytes = 4, read_index=0, mformat=FORMATS.NUMBER, mtype=TYPES.SENSOR, device=DEVICES.SYS, translation_key="device_number"),
     RestItem( address_read="0100", read_bytes = 3, read_index=0, mformat=FORMATS.NUMBER, mtype=TYPES.SENSOR, device=DEVICES.SYS, translation_key="software_version"),
-    RestItem( address_read="5100", read_bytes = 2, read_index=0, mformat=FORMATS.NUMBER, mtype=TYPES.SENSOR, device=DEVICES.SYS, translation_key="water_hardeness"),
-    RestItem( address_read="5600", read_bytes = 2, read_index=0, mformat=FORMATS.NUMBER, mtype=TYPES.SENSOR, device=DEVICES.SYS, translation_key="salt_storage_mass"),
-    RestItem( address_read="5600", read_bytes = 2, read_index=2, mformat=FORMATS.NUMBER, mtype=TYPES.SENSOR, device=DEVICES.SYS, translation_key="salt_storage_days"),
+    RestItem( address_read="5100", read_bytes = 2, read_index=0, mformat=FORMATS.NUMBER, mtype=TYPES.SENSOR, device=DEVICES.SYS, params= PARAMS_GDH,translation_key="water_hardeness"),
+    RestItem( address_read="5600", read_bytes = 2, read_index=0, mformat=FORMATS.NUMBER, mtype=TYPES.SENSOR, device=DEVICES.SYS, params= PARAMS_MASS, translation_key="salt_storage_mass"),
+    RestItem( address_read="5600", read_bytes = 2, read_index=2, mformat=FORMATS.NUMBER, mtype=TYPES.SENSOR, device=DEVICES.SYS, params= PARAMS_DAYS,translation_key="salt_storage_days"),
+    RestItem( address_read="2800", read_bytes = 4, read_index=0, mformat=FORMATS.NUMBER, mtype=TYPES.SENSOR, device=DEVICES.SYS, params= PARAMS_QBM, translation_key="water_total"),
+    RestItem( address_read="2900", read_bytes = 4, read_index=0, mformat=FORMATS.NUMBER, mtype=TYPES.SENSOR, device=DEVICES.SYS, params= PARAMS_QBM, translation_key="water_treated"),
+    RestItem( address_read="5800", read_bytes = 16, read_index=0, mformat=FORMATS.TEXT, mtype=TYPES.SENSOR, device=DEVICES.SYS, params= PARAMS_CONTACT,translation_key="service_contact"),
+    RestItem( address_read="2500", read_bytes = 1, read_index=0, mformat=FORMATS.NUMBER, mtype=TYPES.SENSOR, device=DEVICES.SYS, params= PARAMS_MINUTES,translation_key="operating_minutes"),
+    RestItem( address_read="2500", read_bytes = 1, read_index=1, mformat=FORMATS.NUMBER, mtype=TYPES.SENSOR, device=DEVICES.SYS, params= PARAMS_HOURS,translation_key="operating_hours"),
+    RestItem( address_read="2500", read_bytes = 2, read_index=2, mformat=FORMATS.NUMBER, mtype=TYPES.SENSOR, device=DEVICES.SYS, params= PARAMS_DAYS,translation_key="operating_days"),
+    RestItem( address_read="0E00", read_bytes = 4, read_index=0, mformat=FORMATS.NUMBER, mtype=TYPES.SENSOR, device=DEVICES.SYS,translation_key="install_date"),
 ]
 
 REST_ST_ITEMS: list[RestItem] = [
-    RestItem( address_read="FB00", mformat=FORMATS.NUMBER, mtype=TYPES.SENSOR, device=DEVICES.ST, params=PARAMS_WATER, translation_key="day_statistics"),
+    RestItem( address_read="FB00", mformat=FORMATS.NUMBER, mtype=TYPES.SENSOR, device=DEVICES.ST, params=PARAMS_QBM, translation_key="day_statistics"),
 ]
 
 DEVICELISTS: list = [

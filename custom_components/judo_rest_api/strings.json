@@ -87,6 +87,27 @@
             },
             "salt_storage_days": {
                 "name": "Salt storage days"
+            },
+            "water_total": {
+                "name": "Water total"
+            },
+            "water_treated": {
+                "name": "Water treated"
+            },
+            "service_contact": {
+                "name": "Service contact"
+            },
+            "operating_days": {
+                "name": "Operating days"
+            },
+            "operating_minutes": {
+                "name": "Operating minutes"
+            },
+            "operating_hours": {
+                "name": "Operating hours"
+            },
+            "install_date": {
+                "name": "Date of commissioning"
             }
         }
     },

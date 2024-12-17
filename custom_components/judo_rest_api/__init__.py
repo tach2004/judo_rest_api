@@ -31,7 +31,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: MyConfigEntry) -> bool:
     # with your actual devices.
     # hass.data.setdefault(DOMAIN, {})[entry.entry_id] = hub.Hub(hass, entry.data["host"])
     restapi = RestAPI(config_entry=entry, hass=hass)
-    await restapi.login()
+    # await restapi.login()
 
     itemlist = []
 

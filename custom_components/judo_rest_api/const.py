@@ -30,7 +30,7 @@ class MainConstants:
     """Main constants."""
 
     DOMAIN = "judo_rest_api"
-    SCAN_INTERVAL = timedelta(seconds=30)
+    SCAN_INTERVAL = timedelta(seconds=60)
     UNIQUE_ID = "unique_id"
     APPID = 100
 

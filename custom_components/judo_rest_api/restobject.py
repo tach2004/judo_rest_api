@@ -77,7 +77,7 @@ class RestAPI:
                     timeout=10,
                 )
             )
-            res = response.json()
+            res = await self._hass.async_add_executor_job(response.json)
             return res["data"]
         except Exception:
             log.warning("Connection to Judo Water Treatment failed")

@@ -71,7 +71,7 @@ class MyCoordinator(DataUpdateCoordinator):
         This method will be called automatically during
         coordinator.async_config_entry_first_refresh.
         """
-        await self._rest_api.login()
+        # await self._rest_api.login()
         await self._rest_api.connect()
 
     async def fetch_data(self, idx=None):
@@ -102,7 +102,7 @@ class MyCoordinator(DataUpdateCoordinator):
         """
         # Note: asyncio.TimeoutError and aiohttp.ClientError are already
         # handled by the data update coordinator.
-        async with asyncio.timeout(10):
+        async with asyncio.timeout(30):
             # Grab active context variables to limit data required to be fetched from API
             # Note: using context is not required if there is no need or ability to limit
             # data retrieved from API.

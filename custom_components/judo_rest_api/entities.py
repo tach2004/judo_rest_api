@@ -33,6 +33,7 @@ class MyEntity(Entity):
     _attr_should_poll = True
     _attr_has_entity_name = True
     _attr_entity_name = None
+    _divider = 1
 
     def __init__(
         self,
@@ -72,28 +73,33 @@ class MyEntity(Entity):
 
         self._rest_api = rest_api
 
-        if self._rest_item.format == FORMATS.STATUS:
-            self._divider = 1
-        else:
-            # default state class to record all entities by default
-            self._attr_state_class = SensorStateClass.MEASUREMENT
-            if self._rest_item.params is not None:
-                self._attr_state_class = self._rest_item.params.get(
-                    "stateclass", SensorStateClass.MEASUREMENT
-                )
-                self._attr_native_unit_of_measurement = self._rest_item.params.get(
-                    "unit", ""
-                )
-                self._attr_native_step = self._rest_item.params.get("step", 1)
-                self._divider = self._rest_item.params.get("divider", 1)
-                self._attr_device_class = self._rest_item.params.get(
-                    "deviceclass", None
-                )
-                self._attr_suggested_display_precision = self._rest_item.params.get(
-                    "precision", 2
-                )
-                self._attr_native_min_value = self._rest_item.params.get("min", -999999)
-                self._attr_native_max_value = self._rest_item.params.get("max", 999999)
+        match self._rest_item.format:
+            case FORMATS.STATUS | FORMATS.TEXT:
+                self._divider = 1
+            case _:
+                # default state class to record all entities by default
+                self._attr_state_class = SensorStateClass.MEASUREMENT
+                if self._rest_item.params is not None:
+                    self._attr_state_class = self._rest_item.params.get(
+                        "stateclass", SensorStateClass.MEASUREMENT
+                    )
+                    self._attr_native_unit_of_measurement = self._rest_item.params.get(
+                        "unit", ""
+                    )
+                    self._attr_native_step = self._rest_item.params.get("step", 1)
+                    self._divider = self._rest_item.params.get("divider", 1)
+                    self._attr_device_class = self._rest_item.params.get(
+                        "deviceclass", None
+                    )
+                    self._attr_suggested_display_precision = self._rest_item.params.get(
+                        "precision", 2
+                    )
+                    self._attr_native_min_value = self._rest_item.params.get(
+                        "min", -999999
+                    )
+                    self._attr_native_max_value = self._rest_item.params.get(
+                        "max", 999999
+                    )
 
         if self._rest_item.params is not None:
             icon = self._rest_item.params.get("icon", None)
@@ -139,7 +145,11 @@ class MySensorEntity(CoordinatorEntity, SensorEntity, MyEntity):
     @callback
     def _handle_coordinator_update(self) -> None:
         """Handle updated data from the coordinator."""
-        self._attr_native_value = self._rest_item.state
+        match self._rest_item.format:
+            case FORMATS.STATUS | FORMATS.TEXT:
+                self._attr_native_value = self._rest_item.state
+            case FORMATS.NUMBER:
+                self._attr_native_value = self._rest_item.state / self._divider
         self.async_write_ha_state()
 
     @property

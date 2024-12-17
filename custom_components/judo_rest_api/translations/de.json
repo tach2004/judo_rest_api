@@ -87,6 +87,27 @@
             },
             "salt_storage_days": {
                 "name": "Salzvorrat Tage"
+            },
+            "water_total": {
+                "name": "Gesamtwassermenge"
+            },
+            "water_treated": {
+                "name": "Weichwassermenge"
+            },
+            "service_contact": {
+                "name": "Kundendienst-Kontakt"
+            },
+            "operating_days": {
+                "name": "Betriebszeit Tage"
+            },
+            "operating_minutes": {
+                "name": "Betriebszeit Minuten"
+            },
+            "operating_hours": {
+                "name": "Betriebszeit Stunden"
+            },
+            "install_date": {
+                "name": "Inbetriebnahmedatum"
             }
         }
     },
