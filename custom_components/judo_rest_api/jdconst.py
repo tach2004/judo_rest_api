@@ -1,6 +1,6 @@
 """Heatpump constants."""
 
-from homeassistant.components.sensor import SensorStateClass
+from homeassistant.components.sensor import SensorStateClass, SensorDeviceClass
 from homeassistant.const import (
     UnitOfVolumeFlowRate,
     UnitOfMass,
@@ -117,6 +117,7 @@ PARAMS_QBM: dict = {
     "preciosion": 3,
     "unit": UnitOfVolume.CUBIC_METERS,
     "stateclass": SensorStateClass.TOTAL_INCREASING,
+    "deviceclass": SensorDeviceClass.WATER,
     "icon": "mdi:water"
 }
 
