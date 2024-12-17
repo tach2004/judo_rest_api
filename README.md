@@ -2,4 +2,53 @@
 Home Assistant integration to connect to judo water treatment directly via REST API based on this documentation:
 https://judo.eu/app/uploads/2023/08/2023-06-29_RESTAPI_Kommandos_Geraetetypen-SW3.05.pdf
 
-Coming soon to this theater ;-)
+# Judo_rest_api
+
+This integration lets you monitor and control your Judo water treatment device locally through it's REST API.
+
+## Installation
+
+[![Start Config Flow](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start?domain=judo_rest_api)
+
+### HACS (manually add Repository)
+
+Add this repository to HACS.
+* In the HACS GUI, select "Custom repositories"
+* Enter the following repository URL: https://github.com/OStrama/judo_rest_api/releases
+* Category: Integration
+* After adding the integration, restart Home Assistant.
+* Now under Configuration -> Integrations, "Weishaupt Modbus Integration" should be available.
+
+### Manual install
+
+Create a directory called `judo_rest_api` in the `<config directory>/custom_components/` directory on your Home Assistant
+instance. Install this component by copying all files in `/custom_components/judo_rest_api/` folder from this repo into the
+new `<config directory>/custom_components/judo_rest_api/` directory you just created.
+
+This is how your custom_components directory should look like:
+
+```bash
+custom_components
+├── judo_rest_api
+│   ├── __init__.py
+│   ├── ...
+│   ├── ...
+│   ├── ...
+│   └── sensor.py  
+```
+## Configuration
+
+The only mandatory parameters are:
+* The IP-Address of your Judo water treatment device. The port should be ok at default (80) unless you changed it in the configuration of the connectivity module.
+* The user name. The default value of the connectivity module is "admin". You can change it on the web interfave of the connectivity module
+* The password. The default value of the connectivity module is "Connectivity". You can change it on the web interfave of the connectivity module
+
+The "Device Postfix" has a default value of "". It can be used to add multiple devices to one home assistant. For compatibility this should be left empty. If you want to add another device, use a name that help to identify the devices.
+
+
+# Disclaimer
+The developers of this integration are not affiliated with Judo. They have created the integration as open source in their spare time on the basis of publicly accessible information. 
+The use of the integration is at the user's own risk and responsibility. The developers are not liable for any damages arising from the use of the integration.
+
+
+More coming soon to this theater ;-)
