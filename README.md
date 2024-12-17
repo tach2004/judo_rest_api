@@ -5,6 +5,8 @@ https://judo.eu/app/uploads/2023/08/2023-06-29_RESTAPI_Kommandos_Geraetetypen-SW
 # Judo_rest_api
 
 This integration lets you monitor and control your Judo water treatment device locally through it's REST API.
+![image](https://github.com/user-attachments/assets/92b7a918-66fa-4629-9a11-eda285097c82)
+
 
 ## Installation
 
@@ -37,6 +39,7 @@ custom_components
 │   └── sensor.py  
 ```
 ## Configuration
+![image](https://github.com/user-attachments/assets/2a94dcf0-fca3-4658-960f-b2969a4b656e)
 
 The only mandatory parameters are:
 * The IP-Address of your Judo water treatment device. The port should be ok at default (80) unless you changed it in the configuration of the connectivity module.
