@@ -5,7 +5,8 @@ https://judo.eu/app/uploads/2023/08/2023-06-29_RESTAPI_Kommandos_Geraetetypen-SW
 # Judo_rest_api
 
 This integration lets you monitor and control your Judo water treatment device locally through it's REST API.
-![image](https://github.com/user-attachments/assets/92b7a918-66fa-4629-9a11-eda285097c82)
+<img width="414" alt="image" src="https://github.com/user-attachments/assets/5f979fc9-570d-47ac-9f79-d4769c379f81" />
+
 
 
 ## Installation
