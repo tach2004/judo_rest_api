@@ -1,14 +1,13 @@
 """The Update Coordinator for the RestItems."""
 
 import asyncio
-from datetime import timedelta
 import logging
 
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 
 from .configentry import MyConfigEntry
-from .const import CONST, TYPES, DEVICES, CONF
+from .const import CONST
 from .items import RestItem
 from .restobject import RestAPI, RestObject
 

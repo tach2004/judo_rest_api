@@ -53,7 +53,7 @@ class RestAPI:
     async def login(self) -> None:
         """Log into the portal. Create cookie to stay logged in for the session."""
 
-        r = await self._hass.async_add_executor_job(
+        _useless = await self._hass.async_add_executor_job(
             partial(
                 requests.get,
                 url=self._base_url,

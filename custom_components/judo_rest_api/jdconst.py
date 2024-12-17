@@ -1,8 +1,7 @@
 """Heatpump constants."""
 
-from homeassistant.components.sensor import SensorDeviceClass, SensorStateClass
+from homeassistant.components.sensor import SensorStateClass
 from homeassistant.const import (
-    UnitOfEnergy,
     UnitOfVolumeFlowRate,
     UnitOfMass,
     UnitOfVolume,
