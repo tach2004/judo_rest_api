@@ -30,21 +30,20 @@ async def async_setup_entry(
     coordinator = config_entry.runtime_data.coordinator
 
     for device in DEVICELISTS:
-        #        entries = await build_entity_list(
-        #            entries=entries,
-        #            config_entry=config_entry,
-        #            api_items=device,
-        #            item_type=TYPES.NUMBER_RO,
-        #            coordinator=coordinator,
-        #        )
-        #        entries = await build_entity_list(
-        #            entries=entries,
-        #            config_entry=config_entry,
-        #            api_items=device,
-        #            item_type=TYPES.SENSOR_CALC,
-        #            coordinator=coordinator,
-        #        )
-
+        entries = await build_entity_list(
+            entries=entries,
+            config_entry=config_entry,
+            api_items=device,
+            item_type=TYPES.NUMBER_RO,
+            coordinator=coordinator,
+        )
+        entries = await build_entity_list(
+            entries=entries,
+            config_entry=config_entry,
+            api_items=device,
+            item_type=TYPES.SENSOR_CALC,
+            coordinator=coordinator,
+        )
         entries = await build_entity_list(
             entries=entries,
             config_entry=config_entry,
