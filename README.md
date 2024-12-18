@@ -42,10 +42,10 @@ custom_components
 
 The only mandatory parameters are:
 * The IP-Address of your Judo water treatment device. The port should be ok at default (80) unless you changed it in the configuration of the connectivity module.
-* The user name. The default value of the connectivity module is "admin". You can change it on the web interfave of the connectivity module
-* The password. The default value of the connectivity module is "Connectivity". You can change it on the web interfave of the connectivity module
+* The user name. The default value of the connectivity module is "admin". You can change it on the web interface of the connectivity module
+* The password. The default value of the connectivity module is "Connectivity". You can change it on the web interface of the connectivity module
 
-The "Device Postfix" has a default value of "". It can be used to add multiple devices to one home assistant. For compatibility this should be left empty. If you want to add another device, use a name that help to identify the devices.
+The "Device Postfix" has a default value of "". It can be used to add multiple devices to one home assistant. For compatibility this should be left empty. If you want to add another device, use a name that helps to identify the devices.
 
 
 # Disclaimer
