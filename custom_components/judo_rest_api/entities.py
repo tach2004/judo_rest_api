@@ -117,6 +117,7 @@ class MyEntity(Entity):
             "manufacturer": "Judo",
         }
 
+   
     @property
     def device_info(self) -> DeviceInfo:
         """Return device info."""
@@ -145,14 +146,50 @@ class MySensorEntity(CoordinatorEntity, SensorEntity, MyEntity):
     @callback
     def _handle_coordinator_update(self) -> None:
         """Handle updated data from the coordinator."""
-        match self._rest_item.format:
-            case FORMATS.STATUS | FORMATS.TEXT:
-                self._attr_native_value = self._rest_item.state
-            case FORMATS.NUMBER:
-                self._attr_native_value = self._rest_item.state / self._divider
+        self._attr_native_value = self._rest_item.state
         self.async_write_ha_state()
 
     @property
     def device_info(self) -> DeviceInfo:
         """Return device info."""
         return MyEntity.my_device_info(self)
+
+
+
+class MyNumberEntity(CoordinatorEntity, NumberEntity, MyEntity):  # pylint: disable=W0223
+    """Represent a Number Entity.
+
+    Class that represents a number entity derived from NumberEntity
+    and decorated with general parameters from MyEntity
+    """
+
+    def __init__(
+        self,
+        config_entry: MyConfigEntry,
+        rest_item: RestItem,
+        coordinator: MyCoordinator,
+        idx,
+    ) -> None:
+        """Initialize NyNumberEntity."""
+        super().__init__(coordinator, context=idx)
+        self._idx = idx
+        MyEntity.__init__(self, config_entry, rest_item, coordinator.modbus_api)
+
+    @callback
+    def _handle_coordinator_update(self) -> None:
+        """Handle updated data from the coordinator."""
+        self._attr_native_value = self._rest_item.state
+        self.async_write_ha_state()
+
+    async def async_set_native_value(self, value: float) -> None:
+        """Send value over modbus and refresh HA."""
+        ro = RestObject(self._rest_api, self._rest_item)
+        await ro.setvalue(value) # rest_item.state will be set inside ro.setvalue
+        self._attr_native_value = self._rest_item.state
+        self.async_write_ha_state()
+
+    @property
+    def device_info(self) -> DeviceInfo:
+        """Return device info."""
+        return MyEntity.my_device_info(self)
+
