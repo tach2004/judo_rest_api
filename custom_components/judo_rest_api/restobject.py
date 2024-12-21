@@ -144,7 +144,7 @@ class RestObject:
         self._rest_item = rest_item
         self._rest_api = rest_api
 
-    def format_response(self, text: str, flip) -> str
+    def format_response(self, text: str, flip) -> str:
         index = self._rest_item.read_index * 2
         big_endian = text[index : index + self._rest_item.read_bytes * 2]
         if flip is True:
@@ -152,7 +152,7 @@ class RestObject:
             return little_endian
         return big_endian
 
-    def format_int_message(self, number: int, flip) -> str
+    def format_int_message(self, number: int, flip) -> str:
         numbytes = str(self._rest_item.write_bytes * 2)
         mask = "%0."+numbytes+"X"
         big_endian = mask % integerVariable
@@ -161,7 +161,7 @@ class RestObject:
             return little_endian
         return big_endian
 
-    def format_str_message(self, text: str, flip) -> str
+    def format_str_message(self, text: str, flip) -> str:
         big_endian = text.encode("utf-8").hex()
         if flip is True:
             little_endian = bytes.fromhex(big_endian)[::-1].hex()
