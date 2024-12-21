@@ -3,10 +3,9 @@
 import logging
 from .configentry import MyConfigEntry
 from .items import RestItem
-from .restobject import RestObject
 from .const import TYPES
 from .coordinator import MyCoordinator
-from .entities import MySensorEntity
+from .entities import MySensorEntity, MyNumberEntity, MySwitchEntity
 
 logging.basicConfig()
 log = logging.getLogger(__name__)
@@ -45,22 +44,26 @@ async def build_entity_list(
                     entries.append(
                         MySensorEntity(config_entry, item, coordinator, index)
                     )
-    #                case TYPES.SENSOR_CALC:
-    #                    entries.append(
-    #                        MyCalcSensorEntity(
-    #                            config_entry,
-    #                            item,
-    #                            coordinator,
-    #                            index,
-    #                        )
-    #                    )
-    #                case TYPES.SELECT:
-    #                    entries.append(
-    #                        MySelectEntity(config_entry, item, coordinator, index)
-    #                    )
-    #                case TYPES.NUMBER:
-    #                    entries.append(
-    #                        MyNumberEntity(config_entry, item, coordinator, index)
-    #                    )
+                #                case TYPES.SENSOR_CALC:
+                #                    entries.append(
+                #                        MyCalcSensorEntity(
+                #                            config_entry,
+                #                            item,
+                #                            coordinator,
+                #                            index,
+                #                        )
+                #                    )
+                #                case TYPES.SELECT:
+                #                    entries.append(
+                #                        MySelectEntity(config_entry, item, coordinator, index)
+                #                    )
+                case TYPES.NUMBER:
+                    entries.append(
+                        MyNumberEntity(config_entry, item, coordinator, index)
+                    )
+                case TYPES.SWITCH:
+                    entries.append(
+                        MySwitchEntity(config_entry, item, coordinator, index)
+                    )
 
     return entries

@@ -10,7 +10,7 @@ import requests
 from homeassistant.core import HomeAssistant
 
 from .configentry import MyConfigEntry
-from .const import DEVICETYPES, FORMATS, CONF
+from .const import DEVICETYPES, FORMATS, CONF, TYPES
 from .items import RestItem
 
 logging.basicConfig()
@@ -101,8 +101,6 @@ class RestAPI:
             log.warning("Connection to Judo Water Treatment failed")
             return None
 
-
-    
     async def connect(self):
         """Open REST connection to test if available."""
         res = await self.get_rest("FF00")
@@ -143,6 +141,9 @@ class RestObject:
         """
         self._rest_item = rest_item
         self._rest_api = rest_api
+        self._divider = 1
+        if self._rest_item.params is not None:
+            self._divider = self._rest_item.params.get("divider", 1)
 
     def format_response(self, text: str, flip) -> str:
         index = self._rest_item.read_index * 2
@@ -154,8 +155,8 @@ class RestObject:
 
     def format_int_message(self, number: int, flip) -> str:
         numbytes = str(self._rest_item.write_bytes * 2)
-        mask = "%0."+numbytes+"X"
-        big_endian = mask % integerVariable
+        mask = "%0." + numbytes + "X"
+        big_endian = mask % number
         if flip is True:
             little_endian = bytes.fromhex(big_endian)[::-1].hex()
             return little_endian
@@ -167,26 +168,29 @@ class RestObject:
             little_endian = bytes.fromhex(big_endian)[::-1].hex()
             return little_endian
         return big_endian
-    
-    
+
     def get_val(self, text: str) -> float:
-        return float(int(self.format_response(text,True), 16)/self._rest_item._divider)
+        return float(int(self.format_response(text, True), 16) / self._divider)
 
     def get_status(self, text: str) -> str:
-        return self._rest_item.get_translation_key_from_number(int(self.format_response(text,True), 16))
+        return self._rest_item.get_translation_key_from_number(
+            int(self.format_response(text, True), 16)
+        )
 
     def get_text(self, text: str) -> str:
-        return bytearray.fromhex(self.format_response(text,False)).decode()
+        return bytearray.fromhex(self.format_response(text, False)).decode()
 
     def set_val(self, number: float) -> str:
-        return self.format_int_message(int(number*self._rest_item._divider),True)
+        return self.format_int_message(int(number * self._divider), True)
 
     def set_status(self, label: str) -> int:
-        return self.format_int_message(self._rest_item.get_number_from_translation_key(label),True)
+        return self.format_int_message(
+            self._rest_item.get_number_from_translation_key(label), True
+        )
 
     def set_text(self, text: str) -> str:
-        return self.format_str_message(text,True)
-    
+        return self.format_str_message(text, True)
+
     @property
     async def value(self):
         """Returns the value from the REST API."""
@@ -195,6 +199,8 @@ class RestObject:
 
         res = await self._rest_api.get_rest(self._rest_item.address_read)
         match self._rest_item.format:
+            case FORMATS.SWITCH:
+                return None
             case FORMATS.NUMBER:
                 return self.get_val(res)
             case FORMATS.TEXT:
@@ -219,9 +225,15 @@ class RestObject:
         towrite = None
         if self._rest_api is None:
             return
-        if self._rest_item._type == TYPES.SENSOR:
+        if self._rest_item.type == TYPES.SENSOR:
             return
         match self._rest_item.format:
+            case FORMATS.SWITCH:
+                if value == 0:
+                    await self._rest_api.set_rest(self._rest_item.address_read, "")
+                if value == 1:
+                    await self._rest_api.set_rest(self._rest_item.address_write, "")
+                return
             case FORMATS.NUMBER:
                 towrite = self.set_val(value)
             case FORMATS.TEXT:

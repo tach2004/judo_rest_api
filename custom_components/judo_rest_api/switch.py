@@ -22,7 +22,8 @@ async def async_setup_entry(
     async_add_entities: AddEntitiesCallback,
 ) -> None:
     """Set up the sensor platform."""
-    _uselsee = hass
+
+    _useless = hass
     # start with an empty list of entries
     entries = []
 
@@ -34,21 +35,7 @@ async def async_setup_entry(
             entries=entries,
             config_entry=config_entry,
             rest_items=device,
-            item_type=TYPES.NUMBER_RO,
-            coordinator=coordinator,
-        )
-        entries = await build_entity_list(
-            entries=entries,
-            config_entry=config_entry,
-            rest_items=device,
-            item_type=TYPES.SENSOR_CALC,
-            coordinator=coordinator,
-        )
-        entries = await build_entity_list(
-            entries=entries,
-            config_entry=config_entry,
-            rest_items=device,
-            item_type=TYPES.SENSOR,
+            item_type=TYPES.SWITCH,
             coordinator=coordinator,
         )
 

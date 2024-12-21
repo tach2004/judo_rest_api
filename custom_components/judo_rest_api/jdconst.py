@@ -143,6 +143,7 @@ REST_SYS_ITEMS: list[RestItem] = [
     RestItem( address_read="2500", read_bytes = 1, read_index=1, mformat=FORMATS.NUMBER, mtype=TYPES.SENSOR, device=DEVICES.SYS, params= PARAMS_HOURS,translation_key="operating_hours"),
     RestItem( address_read="2500", read_bytes = 2, read_index=2, mformat=FORMATS.NUMBER, mtype=TYPES.SENSOR, device=DEVICES.SYS, params= PARAMS_DAYS,translation_key="operating_days"),
     RestItem( address_read="0E00", read_bytes = 4, read_index=0, mformat=FORMATS.NUMBER, mtype=TYPES.SENSOR, device=DEVICES.SYS,translation_key="install_date"),
+#    RestItem( address_read="3D00", read_bytes = 0, read_index=0, address_write="3C00", write_bytes = 0, write_index=0, mformat=FORMATS.SWITCH, mtype=TYPES.SWITCH, device=DEVICES.SYS,translation_key="leakage_protection"),
 ]
 
 REST_ST_ITEMS: list[RestItem] = [

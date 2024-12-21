@@ -108,7 +108,11 @@
             },
             "install_date": {
                 "name": "Inbetriebnahmedatum"
+            },
+            "leakage_protection": {
+                "name": "Leckageschutz"
             }
+
         }
     },
     "options": {

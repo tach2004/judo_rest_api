@@ -3,6 +3,8 @@
 import logging
 
 from homeassistant.components.sensor import SensorEntity, SensorStateClass
+from homeassistant.components.number import NumberEntity
+from homeassistant.components.switch import SwitchEntity
 from homeassistant.core import callback
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity import Entity
@@ -12,7 +14,7 @@ from .configentry import MyConfigEntry
 from .const import CONF, CONST, FORMATS
 from .coordinator import MyCoordinator
 from .items import RestItem
-from .restobject import RestAPI
+from .restobject import RestAPI, RestObject
 
 logging.basicConfig()
 log = logging.getLogger(__name__)
@@ -117,7 +119,6 @@ class MyEntity(Entity):
             "manufacturer": "Judo",
         }
 
-   
     @property
     def device_info(self) -> DeviceInfo:
         """Return device info."""
@@ -155,7 +156,6 @@ class MySensorEntity(CoordinatorEntity, SensorEntity, MyEntity):
         return MyEntity.my_device_info(self)
 
 
-
 class MyNumberEntity(CoordinatorEntity, NumberEntity, MyEntity):  # pylint: disable=W0223
     """Represent a Number Entity.
 
@@ -184,7 +184,7 @@ class MyNumberEntity(CoordinatorEntity, NumberEntity, MyEntity):  # pylint: disa
     async def async_set_native_value(self, value: float) -> None:
         """Send value over modbus and refresh HA."""
         ro = RestObject(self._rest_api, self._rest_item)
-        await ro.setvalue(value) # rest_item.state will be set inside ro.setvalue
+        await ro.setvalue(value)  # rest_item.state will be set inside ro.setvalue
         self._attr_native_value = self._rest_item.state
         self.async_write_ha_state()
 
@@ -193,3 +193,47 @@ class MyNumberEntity(CoordinatorEntity, NumberEntity, MyEntity):  # pylint: disa
         """Return device info."""
         return MyEntity.my_device_info(self)
 
+
+class MySwitchEntity(CoordinatorEntity, SwitchEntity, MyEntity):  # pylint: disable=W0223
+    """Represent a Number Entity.
+
+    Class that represents a number entity derived from NumberEntity
+    and decorated with general parameters from MyEntity
+    """
+
+    def __init__(
+        self,
+        config_entry: MyConfigEntry,
+        rest_item: RestItem,
+        coordinator: MyCoordinator,
+        idx,
+    ) -> None:
+        """Initialize NyNumberEntity."""
+        super().__init__(coordinator, context=idx)
+        self._idx = idx
+        MyEntity.__init__(self, config_entry, rest_item, coordinator.rest_api)
+
+    @callback
+    def _handle_coordinator_update(self) -> None:
+        """Handle updated data from the coordinator."""
+        self._attr_is_on = self._rest_item.state
+        self.async_write_ha_state()
+
+    async def async_turn_on(self, **kwargs):
+        """Turn the entity on."""
+        ro = RestObject(self._rest_api, self._rest_item)
+        await ro.setvalue(1)  # rest_item.state will be set inside ro.setvalue
+        self._attr_is_on = self._rest_item.state
+        self.async_write_ha_state()
+
+    async def async_turn_off(self, **kwargs):
+        """Turn the entity off."""
+        ro = RestObject(self._rest_api, self._rest_item)
+        await ro.setvalue(0)  # rest_item.state will be set inside ro.setvalue
+        self._attr_is_on = self._rest_item.state
+        self.async_write_ha_state()
+
+    @property
+    def device_info(self) -> DeviceInfo:
+        """Return device info."""
+        return MyEntity.my_device_info(self)

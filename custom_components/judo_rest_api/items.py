@@ -56,6 +56,8 @@ class RestItem:
         read_index=0,
         read_bytes=1,
         address_write: int = None,
+        write_index=0,
+        write_bytes=1,
         resultlist=None,
         params: dict = None,
     ) -> None:
@@ -65,6 +67,8 @@ class RestItem:
         self._read_index = read_index
         self._read_bytes = read_bytes
         self._address_write = address_write
+        self._write_index = write_index
+        self._write_bytes = write_bytes
         self._format = mformat
         self._type = mtype
         self._device = device

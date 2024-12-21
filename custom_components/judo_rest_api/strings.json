@@ -108,6 +108,9 @@
             },
             "install_date": {
                 "name": "Date of commissioning"
+            },
+            "leakage_protection": {
+                "name": "Leakage protection"
             }
         }
     },

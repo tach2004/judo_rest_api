@@ -46,6 +46,7 @@ class FormatConstants:
     TEXT = "text"
     STATUS = "status"
     UNKNOWN = "unknown"
+    SWITCH = "Switch"
 
 
 FORMATS = FormatConstants()
@@ -60,6 +61,7 @@ class TypeConstants:
     SELECT = "Select"
     NUMBER = "Number"
     NUMBER_RO = "Number_RO"
+    SWITCH = "Switch"
 
 
 TYPES = TypeConstants()
