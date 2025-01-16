@@ -47,6 +47,7 @@ class FormatConstants:
     STATUS = "status"
     UNKNOWN = "unknown"
     SWITCH = "Switch"
+    TIMESTAMP = "Timestamp"
 
 
 FORMATS = FormatConstants()
