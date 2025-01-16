@@ -76,7 +76,7 @@ class MyEntity(Entity):
         self._rest_api = rest_api
 
         match self._rest_item.format:
-            case FORMATS.STATUS | FORMATS.TEXT:
+            case FORMATS.STATUS | FORMATS.TEXT | FORMATS.TIMESTAMP:
                 self._divider = 1
             case _:
                 # default state class to record all entities by default
