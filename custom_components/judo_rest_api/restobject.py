@@ -5,6 +5,7 @@ It contains a REST Client for setting and getting REST response values
 """
 
 import logging
+from datetime import datetime
 from functools import partial
 import requests
 from homeassistant.core import HomeAssistant
@@ -151,7 +152,8 @@ class RestObject:
         if flip is True:
             little_endian = bytes.fromhex(big_endian)[::-1].hex()
             return little_endian
-        return big_endian
+        r_big_endian = bytes.fromhex(big_endian)[::1].hex()           
+        return r_big_endian
 
     def format_int_message(self, number: int, flip) -> str:
         numbytes = str(self._rest_item.write_bytes * 2)
@@ -172,6 +174,9 @@ class RestObject:
     def get_val(self, text: str) -> float:
         return float(int(self.format_response(text, True), 16) / self._divider)
 
+    def get_timestamp(self, text: str) -> str:
+        return str(datetime.fromtimestamp(int(self.format_response(text,False),16)))
+    
     def get_status(self, text: str) -> str:
         return self._rest_item.get_translation_key_from_number(
             int(self.format_response(text, True), 16)
@@ -203,6 +208,8 @@ class RestObject:
                 return None
             case FORMATS.NUMBER:
                 return self.get_val(res)
+            case FORMATS.TIMESTAMP:
+                return self.get_timestamp(res)                
             case FORMATS.TEXT:
                 return self.get_text(res)
             case FORMATS.STATUS:
