@@ -3,7 +3,8 @@ Home Assistant integration to connect to judo water treatment directly via REST 
 https://judo.eu/app/uploads/2023/08/2023-06-29_RESTAPI_Kommandos_Geraetetypen-SW3.05.pdf
 
 Please have a look here to learn more about the communication module that provides the REST API:
-ttps://judo.eu/produkte/connectivity-modul-wlan/
+
+https://judo.eu/produkte/connectivity-modul-wlan/
 
 # Judo_rest_api
 
