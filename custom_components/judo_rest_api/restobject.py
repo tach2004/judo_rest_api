@@ -147,53 +147,65 @@ class RestObject:
             self._divider = self._rest_item.params.get("divider", 1)
 
     def format_response(self, text: str, flip) -> str:
+        """format REST response as string"""
         index = self._rest_item.read_index * 2
         big_endian = text[index : index + self._rest_item.read_bytes * 2]
         if flip is True:
             little_endian = bytes.fromhex(big_endian)[::-1].hex()
             return little_endian
-        r_big_endian = bytes.fromhex(big_endian)[::1].hex()           
+        r_big_endian = bytes.fromhex(big_endian)[::1].hex()
         return r_big_endian
 
     def format_int_message(self, number: int, flip) -> str:
+        """format int message as string"""
         numbytes = str(self._rest_item.write_bytes * 2)
         mask = "%0." + numbytes + "X"
         big_endian = mask % number
         if flip is True:
             little_endian = bytes.fromhex(big_endian)[::-1].hex()
             return little_endian
-        return big_endian
+        r_big_endian = bytes.fromhex(big_endian)[::1].hex()
+        return r_big_endian
 
     def format_str_message(self, text: str, flip) -> str:
+        """format str message as string"""
         big_endian = text.encode("utf-8").hex()
         if flip is True:
             little_endian = bytes.fromhex(big_endian)[::-1].hex()
             return little_endian
-        return big_endian
+        r_big_endian = bytes.fromhex(big_endian)[::1].hex()
+        return r_big_endian
 
     def get_val(self, text: str) -> float:
+        """get float value from REST response"""
         return float(int(self.format_response(text, True), 16) / self._divider)
 
     def get_timestamp(self, text: str) -> str:
-        return str(datetime.fromtimestamp(int(self.format_response(text,False),16)))
-    
+        """get time stamp value from REST response"""
+        return str(datetime.fromtimestamp(int(self.format_response(text, False), 16)))
+
     def get_status(self, text: str) -> str:
+        """get status value from REST response"""
         return self._rest_item.get_translation_key_from_number(
             int(self.format_response(text, True), 16)
         )
 
     def get_text(self, text: str) -> str:
+        """get text from REST response"""
         return bytearray.fromhex(self.format_response(text, False)).decode()
 
     def set_val(self, number: float) -> str:
+        """format float to REST response"""
         return self.format_int_message(int(number * self._divider), True)
 
     def set_status(self, label: str) -> int:
+        """format status to REST response"""
         return self.format_int_message(
             self._rest_item.get_number_from_translation_key(label), True
         )
 
     def set_text(self, text: str) -> str:
+        """format text to REST response"""
         return self.format_str_message(text, True)
 
     @property
@@ -204,12 +216,14 @@ class RestObject:
 
         res = await self._rest_api.get_rest(self._rest_item.address_read)
         match self._rest_item.format:
+            case FORMATS.BUTTON:
+                return None
             case FORMATS.SWITCH:
                 return None
             case FORMATS.NUMBER:
                 return self.get_val(res)
             case FORMATS.TIMESTAMP:
-                return self.get_timestamp(res)                
+                return self.get_timestamp(res)
             case FORMATS.TEXT:
                 return self.get_text(res)
             case FORMATS.STATUS:
@@ -224,7 +238,7 @@ class RestObject:
         return None
 
     # @value.setter
-    async def setvalue(self, value) -> None:
+    async def setvalue(self, value=None) -> None:
         """Set the value of the rest register, does nothing when not R/W.
 
         :param val: The value to write to the rest
@@ -235,6 +249,9 @@ class RestObject:
         if self._rest_item.type == TYPES.SENSOR:
             return
         match self._rest_item.format:
+            case FORMATS.BUTTON:
+                await self._rest_api.set_rest(self._rest_item.address_write, "")
+                return
             case FORMATS.SWITCH:
                 if value == 0:
                     await self._rest_api.set_rest(self._rest_item.address_read, "")

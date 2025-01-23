@@ -47,6 +47,7 @@ class FormatConstants:
     STATUS = "status"
     UNKNOWN = "unknown"
     SWITCH = "Switch"
+    BUTTON = "Button"
     TIMESTAMP = "Timestamp"
 
 
@@ -63,6 +64,7 @@ class TypeConstants:
     NUMBER = "Number"
     NUMBER_RO = "Number_RO"
     SWITCH = "Switch"
+    BUTTON = "Button"
 
 
 TYPES = TypeConstants()

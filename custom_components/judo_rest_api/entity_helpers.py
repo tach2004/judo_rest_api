@@ -5,7 +5,7 @@ from .configentry import MyConfigEntry
 from .items import RestItem
 from .const import TYPES
 from .coordinator import MyCoordinator
-from .entities import MySensorEntity, MyNumberEntity, MySwitchEntity
+from .entities import MySensorEntity, MyNumberEntity, MyButtonEntity
 
 logging.basicConfig()
 log = logging.getLogger(__name__)
@@ -61,9 +61,13 @@ async def build_entity_list(
                     entries.append(
                         MyNumberEntity(config_entry, item, coordinator, index)
                     )
-                case TYPES.SWITCH:
+                # case TYPES.SWITCH:
+                #   entries.append(
+                #       MySwitchEntity(config_entry, item, coordinator, index)
+                #   )
+                case TYPES.BUTTON:
                     entries.append(
-                        MySwitchEntity(config_entry, item, coordinator, index)
+                        MyButtonEntity(config_entry, item, coordinator, index)
                     )
 
     return entries

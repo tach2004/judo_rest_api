@@ -1,4 +1,4 @@
-"""Setting uop my number entities."""
+"""Setting uop my button entities."""
 
 from __future__ import annotations
 
@@ -21,7 +21,7 @@ async def async_setup_entry(
     config_entry: MyConfigEntry,
     async_add_entities: AddEntitiesCallback,
 ) -> None:
-    """Set up the number platform."""
+    """Set up the button platform."""
     _useless = hass
     # start with an empty list of entries
     entries = []
@@ -34,7 +34,7 @@ async def async_setup_entry(
             entries=entries,
             config_entry=config_entry,
             rest_items=device,
-            item_type=TYPES.NUMBER,
+            item_type=TYPES.BUTTON,
             coordinator=coordinator,
         )
 

@@ -191,3 +191,23 @@ class RestItem:
     def address_write(self, val: int):
         """Set address."""
         self._address_write = val
+
+    @property
+    def write_index(self) -> int:
+        """Return address."""
+        return self._write_index
+
+    @write_index.setter
+    def write_index(self, val: int):
+        """Set address."""
+        self._write_index = val
+
+    @property
+    def write_bytes(self) -> int:
+        """Return address."""
+        return self._write_bytes
+
+    @write_bytes.setter
+    def write_bytes(self, val: int):
+        """Set address."""
+        self._write_bytes = val

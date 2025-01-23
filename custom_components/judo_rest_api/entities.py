@@ -5,6 +5,7 @@ import logging
 from homeassistant.components.sensor import SensorEntity, SensorStateClass
 from homeassistant.components.number import NumberEntity
 from homeassistant.components.switch import SwitchEntity
+from homeassistant.components.button import ButtonEntity
 from homeassistant.core import callback
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity import Entity
@@ -173,7 +174,7 @@ class MyNumberEntity(CoordinatorEntity, NumberEntity, MyEntity):  # pylint: disa
         """Initialize NyNumberEntity."""
         super().__init__(coordinator, context=idx)
         self._idx = idx
-        MyEntity.__init__(self, config_entry, rest_item, coordinator.modbus_api)
+        MyEntity.__init__(self, config_entry, rest_item, coordinator.rest_api)
 
     @callback
     def _handle_coordinator_update(self) -> None:
@@ -232,6 +233,36 @@ class MySwitchEntity(CoordinatorEntity, SwitchEntity, MyEntity):  # pylint: disa
         await ro.setvalue(0)  # rest_item.state will be set inside ro.setvalue
         self._attr_is_on = self._rest_item.state
         self.async_write_ha_state()
+
+    @property
+    def device_info(self) -> DeviceInfo:
+        """Return device info."""
+        return MyEntity.my_device_info(self)
+
+
+class MyButtonEntity(CoordinatorEntity, ButtonEntity, MyEntity):  # pylint: disable=W0223
+    """Represent a Number Entity.
+
+    Class that represents a number entity derived from NumberEntity
+    and decorated with general parameters from MyEntity
+    """
+
+    def __init__(
+        self,
+        config_entry: MyConfigEntry,
+        rest_item: RestItem,
+        coordinator: MyCoordinator,
+        idx,
+    ) -> None:
+        """Initialize NyNumberEntity."""
+        super().__init__(coordinator, context=idx)
+        self._idx = idx
+        MyEntity.__init__(self, config_entry, rest_item, coordinator.rest_api)
+
+    async def async_press(self):
+        """Turn the entity on."""
+        ro = RestObject(self._rest_api, self._rest_item)
+        await ro.setvalue()  # rest_item.state will be set inside ro.setvalue
 
     @property
     def device_info(self) -> DeviceInfo:

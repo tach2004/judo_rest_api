@@ -77,6 +77,8 @@ PARAMS_MASS: dict = {
 }
 
 PARAMS_DAYS: dict = {
+    "min": 1,
+    "max": 255,
     "step": 1,
     "preciosion": 0,
     "unit": UnitOfTime.DAYS,
@@ -101,13 +103,15 @@ PARAMS_HOURS: dict = {
 }
 
 PARAMS_GDH: dict = {
+    "min": 1,
+    "max": 13,
     "step": 1,
     "preciosion": 1,
     "unit": "°dH",
+    "divider": 1,
     "stateclass": SensorStateClass.MEASUREMENT,
     "icon": "mdi:water-opacity"
 }
-
 
 PARAMS_QBM: dict = {
     "min": 0,
@@ -133,7 +137,10 @@ REST_SYS_ITEMS: list[RestItem] = [
     RestItem( address_read="FF00", read_bytes = 2, read_index=0, mformat=FORMATS.STATUS, mtype=TYPES.SENSOR, device=DEVICES.SYS, resultlist=UNIT_TYPE, translation_key="device_type"),
     RestItem( address_read="0600", read_bytes = 4, read_index=0, mformat=FORMATS.NUMBER, mtype=TYPES.SENSOR, device=DEVICES.SYS, translation_key="device_number"),
     RestItem( address_read="0100", read_bytes = 3, read_index=0, mformat=FORMATS.NUMBER, mtype=TYPES.SENSOR, device=DEVICES.SYS, translation_key="software_version"),
-    RestItem( address_read="5100", read_bytes = 2, read_index=0, mformat=FORMATS.NUMBER, mtype=TYPES.SENSOR, device=DEVICES.SYS, params= PARAMS_GDH,translation_key="water_hardeness"),
+
+    RestItem( address_read="5100", read_bytes = 2, read_index=0, address_write="3000", write_bytes = 1, write_index=0, mformat=FORMATS.NUMBER, mtype=TYPES.NUMBER, device=DEVICES.SYS, params= PARAMS_GDH,translation_key="water_hardeness"),
+    RestItem( address_read="5700", read_bytes = 1, read_index=0, address_write="5700", write_bytes = 1, write_index=0, mformat=FORMATS.NUMBER, mtype=TYPES.NUMBER, device=DEVICES.SYS, params= PARAMS_DAYS,translation_key="salt_warning"),
+
     RestItem( address_read="5600", read_bytes = 2, read_index=0, mformat=FORMATS.NUMBER, mtype=TYPES.SENSOR, device=DEVICES.SYS, params= PARAMS_MASS, translation_key="salt_storage_mass"),
     RestItem( address_read="5600", read_bytes = 2, read_index=2, mformat=FORMATS.NUMBER, mtype=TYPES.SENSOR, device=DEVICES.SYS, params= PARAMS_DAYS,translation_key="salt_storage_days"),
     RestItem( address_read="2800", read_bytes = 4, read_index=0, mformat=FORMATS.NUMBER, mtype=TYPES.SENSOR, device=DEVICES.SYS, params= PARAMS_QBM, translation_key="water_total"),
@@ -143,7 +150,9 @@ REST_SYS_ITEMS: list[RestItem] = [
     RestItem( address_read="2500", read_bytes = 1, read_index=1, mformat=FORMATS.NUMBER, mtype=TYPES.SENSOR, device=DEVICES.SYS, params= PARAMS_HOURS,translation_key="operating_hours"),
     RestItem( address_read="2500", read_bytes = 2, read_index=2, mformat=FORMATS.NUMBER, mtype=TYPES.SENSOR, device=DEVICES.SYS, params= PARAMS_DAYS,translation_key="operating_days"),
     RestItem( address_read="0E00", read_bytes = 4, read_index=0, mformat=FORMATS.TIMESTAMP, mtype=TYPES.SENSOR, device=DEVICES.SYS,translation_key="install_date"),
-#    RestItem( address_read="3D00", read_bytes = 0, read_index=0, address_write="3C00", write_bytes = 0, write_index=0, mformat=FORMATS.SWITCH, mtype=TYPES.SWITCH, device=DEVICES.SYS,translation_key="leakage_protection"),
+
+    RestItem(address_write="3C00", write_bytes = 0, write_index=0, mformat=FORMATS.BUTTON, mtype=TYPES.BUTTON, device=DEVICES.SYS,translation_key="leakage_protection_close"),
+    RestItem(address_write="3D00", write_bytes = 0, write_index=0, mformat=FORMATS.BUTTON, mtype=TYPES.BUTTON, device=DEVICES.SYS,translation_key="leakage_protection_open"),
 ]
 
 REST_ST_ITEMS: list[RestItem] = [

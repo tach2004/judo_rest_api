@@ -33,8 +33,19 @@
     },
     "entity": {
         "number": {
-            "bivalenztemp": {
-                "name": "{prefix}Bivalenztemperatur"
+            "water_hardeness": {
+                "name": "Wasserhärte"
+            },
+            "salt_warning": {
+                "name": "Salzwarnung"
+            }
+        },
+        "button": {
+            "leakage_protection_close": {
+                "name": "Schließe Leckageschutz"
+            },
+            "leakage_protection_open": {
+                "name": "Öffne Leckageschutz"
             }
         },
         "select": {
@@ -55,9 +66,6 @@
             },
             "software_version": {
                 "name": "Softwareversion"
-            },
-            "water_hardeness": {
-                "name": "Wasserhärte"
             },
             "day_statistics": {
                 "name": "Statistik"

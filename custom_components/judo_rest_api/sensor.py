@@ -22,7 +22,7 @@ async def async_setup_entry(
     async_add_entities: AddEntitiesCallback,
 ) -> None:
     """Set up the sensor platform."""
-    _uselsee = hass
+    _useless = hass
     # start with an empty list of entries
     entries = []
 
