@@ -25,7 +25,7 @@ Add this repository to HACS.
 * Enter the following repository URL: https://github.com/OStrama/judo_rest_api
 * Category: Integration
 * After adding the integration, restart Home Assistant.
-* Now under Configuration -> Integrations, "Weishaupt Modbus Integration" should be available.
+* Now under Configuration -> Integrations, "Judo REST API" should be available.
 
 ### Manual install
 
