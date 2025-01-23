@@ -9,7 +9,8 @@ https://judo.eu/produkte/connectivity-modul-wlan/
 # Judo_rest_api
 
 This integration lets you monitor and control your Judo water treatment device locally through it's REST API.
-<img width="414" alt="image" src="https://github.com/user-attachments/assets/5f979fc9-570d-47ac-9f79-d4769c379f81" />
+![image](https://github.com/user-attachments/assets/992b870c-1d18-4788-bdad-aeb1936d26ed)
+
 
 
 
