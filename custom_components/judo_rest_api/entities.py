@@ -174,6 +174,7 @@ class MyNumberEntity(CoordinatorEntity, NumberEntity, MyEntity):  # pylint: disa
         """Initialize NyNumberEntity."""
         super().__init__(coordinator, context=idx)
         self._idx = idx
+        self._coordinator = coordinator
         MyEntity.__init__(self, config_entry, rest_item, coordinator.rest_api)
 
     @callback
@@ -186,6 +187,7 @@ class MyNumberEntity(CoordinatorEntity, NumberEntity, MyEntity):  # pylint: disa
         """Send value over modbus and refresh HA."""
         ro = RestObject(self._rest_api, self._rest_item)
         await ro.setvalue(value)  # rest_item.state will be set inside ro.setvalue
+        #        await self._coordinator.get_value(self._rest_item)
         self._attr_native_value = self._rest_item.state
         self.async_write_ha_state()
 

@@ -46,6 +46,9 @@
             },
             "leakage_protection_open": {
                 "name": "Öffne Leckageschutz"
+            },
+            "start_regeneration": {
+                "name": "Regeneration starten"
             }
         },
         "select": {

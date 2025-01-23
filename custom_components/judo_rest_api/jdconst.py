@@ -113,7 +113,7 @@ PARAMS_GDH: dict = {
     "icon": "mdi:water-opacity"
 }
 
-PARAMS_QBM: dict = {
+PARAMS_QBM_H: dict = {
     "min": 0,
     "max": 100,
     "step": 1,
@@ -125,10 +125,33 @@ PARAMS_QBM: dict = {
     "icon": "mdi:water"
 }
 
+PARAMS_QBM_W: dict = {
+    "min": 0,
+    "max": 100,
+    "step": 1,
+    "divider": 1000,
+    "preciosion": 3,
+    "unit": UnitOfVolume.CUBIC_METERS,
+    "stateclass": SensorStateClass.TOTAL_INCREASING,
+    "deviceclass": SensorDeviceClass.WATER,
+    "icon": "mdi:water-outline"
+}
+
+
 PARAMS_CONTACT: dict = {
     "icon": "mdi:phone"
 }
 
+PARAMS_CLOSE: dict = {
+    "icon": "mdi:water-pump-off"
+}
+PARAMS_OPEN: dict = {
+    "icon": "mdi:water-pump"
+}
+
+PARAMS_REG: dict = {
+    "icon": "mdi:water-check-outline"
+}
 
 # pylint: disable=line-too-long
 
@@ -143,20 +166,21 @@ REST_SYS_ITEMS: list[RestItem] = [
 
     RestItem( address_read="5600", read_bytes = 2, read_index=0, mformat=FORMATS.NUMBER, mtype=TYPES.SENSOR, device=DEVICES.SYS, params= PARAMS_MASS, translation_key="salt_storage_mass"),
     RestItem( address_read="5600", read_bytes = 2, read_index=2, mformat=FORMATS.NUMBER, mtype=TYPES.SENSOR, device=DEVICES.SYS, params= PARAMS_DAYS,translation_key="salt_storage_days"),
-    RestItem( address_read="2800", read_bytes = 4, read_index=0, mformat=FORMATS.NUMBER, mtype=TYPES.SENSOR, device=DEVICES.SYS, params= PARAMS_QBM, translation_key="water_total"),
-    RestItem( address_read="2900", read_bytes = 4, read_index=0, mformat=FORMATS.NUMBER, mtype=TYPES.SENSOR, device=DEVICES.SYS, params= PARAMS_QBM, translation_key="water_treated"),
+    RestItem( address_read="2800", read_bytes = 4, read_index=0, mformat=FORMATS.NUMBER, mtype=TYPES.SENSOR, device=DEVICES.SYS, params= PARAMS_QBM_H, translation_key="water_total"),
+    RestItem( address_read="2900", read_bytes = 4, read_index=0, mformat=FORMATS.NUMBER, mtype=TYPES.SENSOR, device=DEVICES.SYS, params= PARAMS_QBM_W, translation_key="water_treated"),
     RestItem( address_read="5800", read_bytes = 16, read_index=0, mformat=FORMATS.TEXT, mtype=TYPES.SENSOR, device=DEVICES.SYS, params= PARAMS_CONTACT,translation_key="service_contact"),
     RestItem( address_read="2500", read_bytes = 1, read_index=0, mformat=FORMATS.NUMBER, mtype=TYPES.SENSOR, device=DEVICES.SYS, params= PARAMS_MINUTES,translation_key="operating_minutes"),
     RestItem( address_read="2500", read_bytes = 1, read_index=1, mformat=FORMATS.NUMBER, mtype=TYPES.SENSOR, device=DEVICES.SYS, params= PARAMS_HOURS,translation_key="operating_hours"),
     RestItem( address_read="2500", read_bytes = 2, read_index=2, mformat=FORMATS.NUMBER, mtype=TYPES.SENSOR, device=DEVICES.SYS, params= PARAMS_DAYS,translation_key="operating_days"),
     RestItem( address_read="0E00", read_bytes = 4, read_index=0, mformat=FORMATS.TIMESTAMP, mtype=TYPES.SENSOR, device=DEVICES.SYS,translation_key="install_date"),
 
-    RestItem(address_write="3C00", write_bytes = 0, write_index=0, mformat=FORMATS.BUTTON, mtype=TYPES.BUTTON, device=DEVICES.SYS,translation_key="leakage_protection_close"),
-    RestItem(address_write="3D00", write_bytes = 0, write_index=0, mformat=FORMATS.BUTTON, mtype=TYPES.BUTTON, device=DEVICES.SYS,translation_key="leakage_protection_open"),
+    RestItem(address_write="3C00", write_bytes = 0, write_index=0, mformat=FORMATS.BUTTON, mtype=TYPES.BUTTON, device=DEVICES.SYS, params= PARAMS_CLOSE, translation_key="leakage_protection_close"),
+    RestItem(address_write="3D00", write_bytes = 0, write_index=0, mformat=FORMATS.BUTTON, mtype=TYPES.BUTTON, device=DEVICES.SYS, params= PARAMS_OPEN, translation_key="leakage_protection_open"),
+    RestItem(address_write="350000", write_bytes = 0, write_index=0, mformat=FORMATS.BUTTON, mtype=TYPES.BUTTON, device=DEVICES.SYS, params= PARAMS_REG, translation_key="start_regeneration"),
 ]
 
 REST_ST_ITEMS: list[RestItem] = [
-    RestItem( address_read="FB00", mformat=FORMATS.NUMBER, mtype=TYPES.SENSOR, device=DEVICES.ST, params=PARAMS_QBM, translation_key="day_statistics"),
+    RestItem( address_read="FB00", mformat=FORMATS.NUMBER, mtype=TYPES.SENSOR, device=DEVICES.ST, params=PARAMS_QBM_H, translation_key="day_statistics"),
 ]
 
 DEVICELISTS: list = [

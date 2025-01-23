@@ -68,7 +68,9 @@ class RestAPI:
 
     async def get_rest(self, command: str):
         """get raw response from REST api"""
+        response = None
         try:
+            log.debug("Send command %s", command)
             url = self._api_url + command
             response = await self._hass.async_add_executor_job(
                 partial(
@@ -78,10 +80,16 @@ class RestAPI:
                     timeout=10,
                 )
             )
+            log.debug("Response %s", response.status_code)
             res = await self._hass.async_add_executor_job(response.json)
+            log.debug("Content %s", str(res["data"]))
             return res["data"]
         except Exception:
-            log.warning("Connection to Judo Water Treatment failed")
+            if response is not None:
+                status = str(response.status_code)
+            else:
+                status = "unknown status"
+            log.warning("Judo REST API call failed with %s", status)
             return None
 
     async def set_rest(self, command: str, towrite: str):
@@ -93,7 +101,7 @@ class RestAPI:
                     requests.get,
                     url=url,
                     auth=(self._username, self._password),
-                    timeout=10,
+                    timeout=2,
                 )
             )
             res = await self._hass.async_add_executor_job(response.json)
@@ -146,16 +154,6 @@ class RestObject:
         if self._rest_item.params is not None:
             self._divider = self._rest_item.params.get("divider", 1)
 
-    def format_response(self, text: str, flip) -> str:
-        """format REST response as string"""
-        index = self._rest_item.read_index * 2
-        big_endian = text[index : index + self._rest_item.read_bytes * 2]
-        if flip is True:
-            little_endian = bytes.fromhex(big_endian)[::-1].hex()
-            return little_endian
-        r_big_endian = bytes.fromhex(big_endian)[::1].hex()
-        return r_big_endian
-
     def format_int_message(self, number: int, flip) -> str:
         """format int message as string"""
         numbytes = str(self._rest_item.write_bytes * 2)
@@ -176,58 +174,45 @@ class RestObject:
         r_big_endian = bytes.fromhex(big_endian)[::1].hex()
         return r_big_endian
 
-    def get_val(self, text: str) -> float:
-        """get float value from REST response"""
-        return float(int(self.format_response(text, True), 16) / self._divider)
-
-    def get_timestamp(self, text: str) -> str:
-        """get time stamp value from REST response"""
-        return str(datetime.fromtimestamp(int(self.format_response(text, False), 16)))
-
-    def get_status(self, text: str) -> str:
-        """get status value from REST response"""
-        return self._rest_item.get_translation_key_from_number(
-            int(self.format_response(text, True), 16)
-        )
-
-    def get_text(self, text: str) -> str:
-        """get text from REST response"""
-        return bytearray.fromhex(self.format_response(text, False)).decode()
-
-    def set_val(self, number: float) -> str:
-        """format float to REST response"""
-        return self.format_int_message(int(number * self._divider), True)
-
-    def set_status(self, label: str) -> int:
-        """format status to REST response"""
-        return self.format_int_message(
-            self._rest_item.get_number_from_translation_key(label), True
-        )
-
-    def set_text(self, text: str) -> str:
-        """format text to REST response"""
-        return self.format_str_message(text, True)
-
     @property
     async def value(self):
         """Returns the value from the REST API."""
         if self._rest_api is None:
             return None
+        if self._rest_item.format is FORMATS.BUTTON:
+            return None
 
         res = await self._rest_api.get_rest(self._rest_item.address_read)
+
+        if res is None:
+            return None
+
+        index = self._rest_item.read_index * 2
+        big_endian = res[index : index + self._rest_item.read_bytes * 2]
+        little_endian = bytes.fromhex(big_endian)[::-1].hex()
+        big_endian = bytes.fromhex(big_endian)[::1].hex()
+
+        if big_endian is None:
+            return None
+        if little_endian is None:
+            return None
+        if big_endian == "":
+            return None
+        if little_endian == "":
+            return None
         match self._rest_item.format:
-            case FORMATS.BUTTON:
-                return None
             case FORMATS.SWITCH:
                 return None
             case FORMATS.NUMBER:
-                return self.get_val(res)
+                return float(int(little_endian, 16) / self._divider)
             case FORMATS.TIMESTAMP:
-                return self.get_timestamp(res)
+                return str(datetime.fromtimestamp(int(big_endian, 16)))
             case FORMATS.TEXT:
-                return self.get_text(res)
+                return bytearray.fromhex(big_endian).decode()
             case FORMATS.STATUS:
-                return self.get_status(res)
+                return self._rest_item.get_translation_key_from_number(
+                    int(little_endian, 16)
+                )
             case _:
                 log.warning(
                     "Unknown format: %s in %s",
@@ -248,10 +233,13 @@ class RestObject:
             return
         if self._rest_item.type == TYPES.SENSOR:
             return
+        if self._rest_item.format is FORMATS.BUTTON:
+            await self._rest_api.set_rest(self._rest_item.address_write, "")
+            return
+        if value is None:
+            return
+        self._rest_item.state = value
         match self._rest_item.format:
-            case FORMATS.BUTTON:
-                await self._rest_api.set_rest(self._rest_item.address_write, "")
-                return
             case FORMATS.SWITCH:
                 if value == 0:
                     await self._rest_api.set_rest(self._rest_item.address_read, "")
@@ -259,11 +247,13 @@ class RestObject:
                     await self._rest_api.set_rest(self._rest_item.address_write, "")
                 return
             case FORMATS.NUMBER:
-                towrite = self.set_val(value)
+                towrite = self.format_int_message(int(int(value) * self._divider), True)
             case FORMATS.TEXT:
-                towrite = self.set_text(value)
+                towrite = self.format_str_message((value), True)
             case FORMATS.STATUS:
-                towrite = self.set_status(value)
+                towrite = self.format_int_message(
+                    self._rest_item.get_number_from_translation_key(value), True
+                )
             case _:
                 log.warning(
                     "Unknown format: %s in %s",

@@ -7,7 +7,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 
 from .configentry import MyConfigEntry
-from .const import CONST
+from .const import CONST, FORMATS
 from .items import RestItem
 from .restobject import RestAPI, RestObject
 
@@ -47,11 +47,21 @@ class MyCoordinator(DataUpdateCoordinator):
     async def get_value(self, rest_item: RestItem):
         """Read a value from the rest API"""
 
+        if rest_item.format is FORMATS.BUTTON:
+            return None
         ro = RestObject(self._rest_api, rest_item)
         if ro is None:
-            rest_item.state = None
+            log.warning("RestObject is None for Item %s", rest_item.translation_key)
+            # rest_item.state = None
         else:
-            rest_item.state = await ro.value
+            val = await ro.value
+            if val is not None:
+                log.debug(
+                    "Set Value %s for Item %s", str(val), rest_item.translation_key
+                )
+                rest_item.state = val
+            else:
+                log.warning("None value for Item %s ignored", rest_item.translation_key)
         return rest_item.state
 
     def get_value_from_item(self, translation_key: str) -> int:
@@ -91,7 +101,10 @@ class MyCoordinator(DataUpdateCoordinator):
             try:
                 await self.get_value(item)
             except Exception:
-                log.warning("connection to Judo Water treatment failed")
+                log.warning(
+                    "connection to Judo Water treatment failed for %s",
+                    item.translation_key,
+                )
 
     async def _async_update_data(self):
         """Fetch data from API endpoint.
@@ -101,7 +114,7 @@ class MyCoordinator(DataUpdateCoordinator):
         """
         # Note: asyncio.TimeoutError and aiohttp.ClientError are already
         # handled by the data update coordinator.
-        async with asyncio.timeout(30):
+        async with asyncio.timeout(60):
             # Grab active context variables to limit data required to be fetched from API
             # Note: using context is not required if there is no need or ability to limit
             # data retrieved from API.
