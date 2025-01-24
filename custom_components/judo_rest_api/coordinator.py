@@ -112,14 +112,17 @@ class MyCoordinator(DataUpdateCoordinator):
         This is the place to pre-process the data to lookup tables
         so entities can quickly look up their data.
         """
-        # Note: asyncio.TimeoutError and aiohttp.ClientError are already
-        # handled by the data update coordinator.
-        async with asyncio.timeout(60):
-            # Grab active context variables to limit data required to be fetched from API
-            # Note: using context is not required if there is no need or ability to limit
-            # data retrieved from API.
-            # listening_idx = set(self.async_contexts())
-            return await self.fetch_data()  # !!!!!using listening_idx will result in some entities nevwer updated !!!!!
+        try:
+            # Note: asyncio.TimeoutError and aiohttp.ClientError are already
+            # handled by the data update coordinator.
+            async with asyncio.timeout(60):
+                # Grab active context variables to limit data required to be fetched from API
+                # Note: using context is not required if there is no need or ability to limit
+                # data retrieved from API.
+                # listening_idx = set(self.async_contexts())
+                return await self.fetch_data()  # !!!!!using listening_idx will result in some entities nevwer updated !!!!!
+        except Exception:
+            log.warning("Error fetching Judo Water treatment data")
 
     @property
     def rest_api(self):
