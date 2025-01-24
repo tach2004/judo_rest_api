@@ -81,9 +81,14 @@ class RestAPI:
                 )
             )
             log.debug("Response %s", response.status_code)
-            res = await self._hass.async_add_executor_job(response.json)
-            log.debug("Content %s", str(res["data"]))
-            return res["data"]
+            status = response.status_code
+            if status == 200:
+                res = await self._hass.async_add_executor_job(response.json)
+                log.debug("Content %s", str(res["data"]))
+                return res["data"]
+            else:
+                log.warning("Content ignored for API return status %s", str(status))
+                return None
         except Exception:
             if response is not None:
                 status = str(response.status_code)
