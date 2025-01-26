@@ -12,6 +12,17 @@
             "user": {
                 "data": {
                     "Device-Postfix": "Device postfix",
+                    "scan_interval": "API-Abfrageintervall (standard = 60 s)",
+                    "host": "Hostname oder IP Adresse",
+                    "port": "HTTP Port",
+                    "username": "Benutzername",
+                    "password": "Passwor1"
+                }
+            },
+            "reconfigure": {
+                "data": {
+                    "Device-Postfix": "Device postfix",
+                    "scan_interval": "API-Abfrageintervall (standard = 60 s)",
                     "host": "Hostname oder IP Adresse",
                     "port": "HTTP Port",
                     "username": "Benutzername",
@@ -124,18 +135,6 @@
                 "name": "Leckageschutz"
             }
 
-        }
-    },
-    "options": {
-        "step": {
-            "init": {
-                "data": {
-                    "api_scan_interval": "Api scan interval (default = 300 sec)",
-                    "language": "Language (default = en)",
-                    "mode": "Mode(default = api)",
-                    "scan_interval": "Web scraping interval (default = 1800 sec)"
-                }
-            }
         }
     },
     "title": "Judo Wasseraufbereitung"

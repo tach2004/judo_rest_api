@@ -7,7 +7,7 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 
 from .configentry import MyConfigEntry, MyData
-from .const import CONST
+from .const import CONF, CONST
 from .jdconst import DEVICELISTS
 from .coordinator import MyCoordinator
 from .restobject import RestAPI
@@ -86,8 +86,12 @@ async def async_migrate_entry(hass: HomeAssistant, config_entry: MyConfigEntry):
     if config_entry.version < 1:
         log.warning("Old Version detected")
 
+    if config_entry.version < 2:
+        log.warning("Version <2 detected")
+        new_data[CONF.SCAN_INTERVAL] = CONST.SCAN_INTERVAL
+
     hass.config_entries.async_update_entry(
-        config_entry, data=new_data, minor_version=1, version=1
+        config_entry, data=new_data, minor_version=1, version=2
     )
     return True
 
@@ -99,9 +103,4 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     # details
     entry.runtime_data.rest_api.close()
     unload_ok = await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
-    if unload_ok:
-        try:
-            hass.data[entry.data[CONST.DOMAIN]].pop(entry.entry_id)
-        except KeyError:
-            log.warning("KeyError: %s", str(CONST.DOMAIN))
     return unload_ok

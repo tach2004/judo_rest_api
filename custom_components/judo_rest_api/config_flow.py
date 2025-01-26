@@ -38,7 +38,7 @@ async def validate_input(data: dict) -> dict[str, Any]:
 class ConfigFlow(config_entries.ConfigFlow, domain=CONST.DOMAIN):  # pylint: disable=W0223
     """Class config flow."""
 
-    VERSION = 1
+    VERSION = 2
     # Pick one of the available connection classes in homeassistant/config_entries.py
     # This tells HA if it should be asking for updates, or it'll be notified of updates
     # automatically. This example uses PUSH, as the dummy hub will notify HA of
@@ -65,6 +65,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=CONST.DOMAIN):  # pylint: dis
                 vol.Optional(schema=CONF.USERNAME, default="admin"): str,
                 vol.Optional(schema=CONF.PASSWORD, default="Connectivity"): str,
                 vol.Optional(schema=CONF.DEVICE_POSTFIX, default=""): str,
+                vol.Optional(schema=CONF.SCAN_INTERVAL, default="60"): str,
             }
         )
 
@@ -82,7 +83,17 @@ class ConfigFlow(config_entries.ConfigFlow, domain=CONST.DOMAIN):  # pylint: dis
         # If there is no user input or there were errors, show the form again,
         # #including any errors that were found with the input.
         return self.async_show_form(
-            step_id="user", data_schema=data_schema, errors=errors
+            step_id="user",
+            data_schema=data_schema,
+            errors=errors,
+            description_placeholders={
+                CONF.HOST: "host",
+                CONF.PORT: "port",
+                CONF.USERNAME: "username",
+                CONF.PASSWORD: "password",
+                CONF.DEVICE_POSTFIX: "Device-Postfix",
+                CONF.SCAN_INTERVAL: "scan_interval",
+            },
         )
 
     async def async_step_reconfigure(
@@ -118,6 +129,10 @@ class ConfigFlow(config_entries.ConfigFlow, domain=CONST.DOMAIN):  # pylint: dis
                     schema=CONF.DEVICE_POSTFIX,
                     default=reconfigure_entry.data[CONF.DEVICE_POSTFIX],
                 ): str,
+                vol.Optional(
+                    schema=CONF.SCAN_INTERVAL,
+                    default=reconfigure_entry.data[CONF.SCAN_INTERVAL],
+                ): str,
             }
         )
 
@@ -126,7 +141,12 @@ class ConfigFlow(config_entries.ConfigFlow, domain=CONST.DOMAIN):  # pylint: dis
             data_schema=schema_reconfigure,
             errors=errors,
             description_placeholders={
-                CONF.HOST: "myhostname",
+                CONF.HOST: "host",
+                CONF.PORT: "port",
+                CONF.USERNAME: "username",
+                CONF.PASSWORD: "password",
+                CONF.DEVICE_POSTFIX: "Device-Postfix",
+                CONF.SCAN_INTERVAL: "scan_interval",
             },
         )
 

@@ -1,13 +1,13 @@
 """Constants."""
 
 from dataclasses import dataclass
-from datetime import timedelta
 
 from homeassistant.const import (
     CONF_HOST,
     CONF_PORT,
     CONF_PASSWORD,
     CONF_USERNAME,
+    CONF_SCAN_INTERVAL,
 )
 
 
@@ -20,6 +20,7 @@ class ConfConstants:
     PASSWORD = CONF_PASSWORD
     USERNAME = CONF_USERNAME
     DEVICE_POSTFIX = "Device-Postfix"
+    SCAN_INTERVAL = CONF_SCAN_INTERVAL
 
 
 CONF = ConfConstants()
@@ -30,7 +31,7 @@ class MainConstants:
     """Main constants."""
 
     DOMAIN = "judo_rest_api"
-    SCAN_INTERVAL = timedelta(seconds=60)
+    SCAN_INTERVAL = "60"  # timedelta(seconds=60))
     UNIQUE_ID = "unique_id"
     APPID = 100
 

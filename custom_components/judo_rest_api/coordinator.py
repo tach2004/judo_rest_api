@@ -2,12 +2,13 @@
 
 import asyncio
 import logging
+from datetime import timedelta
 
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 
 from .configentry import MyConfigEntry
-from .const import CONST, FORMATS
+from .const import CONF, FORMATS
 from .items import RestItem
 from .restobject import RestAPI, RestObject
 
@@ -32,7 +33,10 @@ class MyCoordinator(DataUpdateCoordinator):
             # Name of the data. For logging purposes.
             name="judo_rest_api-coordinator",
             # Polling interval. Will only be polled if there are subscribers.
-            update_interval=CONST.SCAN_INTERVAL,
+            # update_interval=CONST.SCAN_INTERVAL,
+            update_interval=timedelta(
+                seconds=int(p_config_entry.data[CONF.SCAN_INTERVAL])
+            ),
             # Set always_update to `False` if the data returned from the
             # api can be compared via `__eq__` to avoid duplicate updates
             # being dispatched to listeners
@@ -96,6 +100,7 @@ class MyCoordinator(DataUpdateCoordinator):
             # idx exists and is filled up: Update only entitys requested by the coordinator.
             to_update = idx
 
+        # log.info("Start Scan")
         for index in to_update:
             item = self._restitems[index]
             try:

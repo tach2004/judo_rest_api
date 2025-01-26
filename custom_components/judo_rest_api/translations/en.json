@@ -12,6 +12,17 @@
             "user": {
                 "data": {
                     "Device-Postfix": "Device postfix",
+                    "scan_interval": "API poll interval (default = 60 sec)",
+                    "host": "Host name or IP address",
+                    "port": "HTTP Port",
+                    "username": "User name",
+                    "password": "Password"
+                }
+            },
+            "reconfigure": {
+                "data": {
+                    "Device-Postfix": "Device postfix",
+                    "scan_interval": "API poll interval (default = 60 sec)",
                     "host": "Host name or IP address",
                     "port": "HTTP Port",
                     "username": "User name",
@@ -122,18 +133,6 @@
             },
             "leakage_protection": {
                 "name": "Leakage protection"
-            }
-        }
-    },
-    "options": {
-        "step": {
-            "init": {
-                "data": {
-                    "api_scan_interval": "Api scan interval (default = 300 sec)",
-                    "language": "Language (default = en)",
-                    "mode": "Mode(default = api)",
-                    "scan_interval": "Web scraping interval (default = 1800 sec)"
-                }
             }
         }
     },
