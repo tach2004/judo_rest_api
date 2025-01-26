@@ -45,7 +45,8 @@ custom_components
 │   └── sensor.py  
 ```
 ## Configuration
-<img width="414" alt="image" src="https://github.com/user-attachments/assets/da1ceee4-129d-45e9-9fec-400949b3f257" />
+![image](https://github.com/user-attachments/assets/36f25cdd-d969-4b80-bdf8-bdedd86e57ad)
+
 
 The only mandatory parameters are:
 * The IP-Address of your Judo water treatment device. The port should be ok at default (80) unless you changed it in the configuration of the connectivity module.
@@ -53,6 +54,7 @@ The only mandatory parameters are:
 * The password. The default value of the connectivity module is "Connectivity". You can change it on the web interface of the connectivity module
 
 The "Device Postfix" has a default value of "". It can be used to add multiple devices to one home assistant. For compatibility this should be left empty. If you want to add another device, use a name that helps to identify the devices.
+The "Scan interval" determines how often the REST API is polled. The default value is every 60 seconds. Too small values will cause more timeouts.
 
 
 # Disclaimer
