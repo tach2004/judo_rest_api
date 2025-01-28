@@ -159,25 +159,23 @@ class RestObject:
         if self._rest_item.params is not None:
             self._divider = self._rest_item.params.get("divider", 1)
 
+    def order_hex_buffer(self, buffer: str, flip) -> str:
+        """brings a hex buffer in the right order"""
+        if flip is True:
+            little_endian = bytes.fromhex(buffer)[::-1].hex()
+            return little_endian
+        big_endian = bytes.fromhex(buffer)[::1].hex()
+        return big_endian
+    
     def format_int_message(self, number: int, flip) -> str:
-        """format int message as string"""
+        """format int message as hex buffer to be sent to REST APPI"""
         numbytes = str(self._rest_item.write_bytes * 2)
         mask = "%0." + numbytes + "X"
-        big_endian = mask % number
-        if flip is True:
-            little_endian = bytes.fromhex(big_endian)[::-1].hex()
-            return little_endian
-        r_big_endian = bytes.fromhex(big_endian)[::1].hex()
-        return r_big_endian
+        return self.order_hex_buffer(mask % number, flip)
 
     def format_str_message(self, text: str, flip) -> str:
-        """format str message as string"""
-        big_endian = text.encode("utf-8").hex()
-        if flip is True:
-            little_endian = bytes.fromhex(big_endian)[::-1].hex()
-            return little_endian
-        r_big_endian = bytes.fromhex(big_endian)[::1].hex()
-        return r_big_endian
+        """format str message as hex buffer to be sent to REST APPI"""
+        return self.order_hex_buffer(text.encode("utf-8").hex(), flip)
 
     @property
     async def value(self):
