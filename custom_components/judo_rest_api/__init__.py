@@ -17,7 +17,7 @@ log = logging.getLogger(__name__)
 
 PLATFORMS: list[str] = [
     "number",
-    # "select",
+    "select",
     "sensor",
     # "switch",
     "button",

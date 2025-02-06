@@ -1,4 +1,4 @@
-"""Setting up my number entities."""
+"""Setting up my select entities."""
 
 from __future__ import annotations
 
@@ -34,7 +34,16 @@ async def async_setup_entry(
             entries=entries,
             config_entry=config_entry,
             rest_items=device,
-            item_type=TYPES.NUMBER,
+            item_type=TYPES.SELECT,
+            coordinator=coordinator,
+        )
+
+    for device in DEVICELISTS:
+        entries = await build_entity_list(
+            entries=entries,
+            config_entry=config_entry,
+            rest_items=device,
+            item_type=TYPES.SELECT_NOIF,
             coordinator=coordinator,
         )
 

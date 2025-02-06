@@ -51,6 +51,16 @@ UNIT_TYPE: list[StatusItem] = [
     StatusItem(number=0x3c, translation_key=  "i_fill"),
 ]
 
+SALT_MASS: list[StatusItem] = [
+    StatusItem(number=0, translation_key="mass_0kg"),
+    StatusItem(number=1, translation_key="mass_1kg"),
+    StatusItem(number=5, translation_key="mass_5kg"),
+    StatusItem(number=10, translation_key="mass_10kg"),
+    StatusItem(number=15, translation_key="mass_15kg"),
+    StatusItem(number=20, translation_key="mass_20kg"),
+    StatusItem(number=25, translation_key="mass_25kg"),
+    StatusItem(number=50, translation_key="mass_50kg"),
+]
 #####################################################
 # Description of physical units via the status list #
 #####################################################
@@ -153,13 +163,20 @@ PARAMS_REG: dict = {
     "icon": "mdi:water-check-outline"
 }
 
+PARAMS_INFO: dict = {
+    "icon": "mdi:information-box-outline"
+}
+
+PARAMS_MASS_REFILL: dict = {
+    "icon": "mdi:weight-kilogram"
+}
 # pylint: disable=line-too-long
 
 # fmt: off
 REST_SYS_ITEMS: list[RestItem] = [
-    RestItem( address_read="FF00", read_bytes = 2, read_index=0, mformat=FORMATS.STATUS, mtype=TYPES.SENSOR, device=DEVICES.SYS, resultlist=UNIT_TYPE, translation_key="device_type"),
-    RestItem( address_read="0600", read_bytes = 4, read_index=0, mformat=FORMATS.NUMBER, mtype=TYPES.SENSOR, device=DEVICES.SYS, translation_key="device_number"),
-    RestItem( address_read="0100", read_bytes = 3, read_index=0, mformat=FORMATS.NUMBER, mtype=TYPES.SENSOR, device=DEVICES.SYS, translation_key="software_version"),
+    RestItem( address_read="FF00", read_bytes = 2, read_index=0, mformat=FORMATS.STATUS, mtype=TYPES.SENSOR, device=DEVICES.SYS, resultlist=UNIT_TYPE, params= PARAMS_INFO, translation_key="device_type"),
+    RestItem( address_read="0600", read_bytes = 4, read_index=0, mformat=FORMATS.NUMBER, mtype=TYPES.SENSOR, device=DEVICES.SYS, params= PARAMS_INFO, translation_key="device_number"),
+    RestItem( address_read="0100", read_bytes = 3, read_index=0, mformat=FORMATS.SW_VERSION, mtype=TYPES.SENSOR, device=DEVICES.SYS, params= PARAMS_INFO, translation_key="software_version"),
 
     RestItem( address_read="5100", read_bytes = 2, read_index=0, address_write="3000", write_bytes = 1, write_index=0, mformat=FORMATS.NUMBER, mtype=TYPES.NUMBER, device=DEVICES.SYS, params= PARAMS_GDH,translation_key="water_hardeness"),
     RestItem( address_read="5700", read_bytes = 1, read_index=0, address_write="5700", write_bytes = 1, write_index=0, mformat=FORMATS.NUMBER, mtype=TYPES.NUMBER, device=DEVICES.SYS, params= PARAMS_DAYS,translation_key="salt_warning"),
@@ -172,11 +189,13 @@ REST_SYS_ITEMS: list[RestItem] = [
     RestItem( address_read="2500", read_bytes = 1, read_index=0, mformat=FORMATS.NUMBER, mtype=TYPES.SENSOR, device=DEVICES.SYS, params= PARAMS_MINUTES,translation_key="operating_minutes"),
     RestItem( address_read="2500", read_bytes = 1, read_index=1, mformat=FORMATS.NUMBER, mtype=TYPES.SENSOR, device=DEVICES.SYS, params= PARAMS_HOURS,translation_key="operating_hours"),
     RestItem( address_read="2500", read_bytes = 2, read_index=2, mformat=FORMATS.NUMBER, mtype=TYPES.SENSOR, device=DEVICES.SYS, params= PARAMS_DAYS,translation_key="operating_days"),
-    RestItem( address_read="0E00", read_bytes = 4, read_index=0, mformat=FORMATS.TIMESTAMP, mtype=TYPES.SENSOR, device=DEVICES.SYS,translation_key="install_date"),
+    RestItem( address_read="0E00", read_bytes = 4, read_index=0, mformat=FORMATS.TIMESTAMP, mtype=TYPES.SENSOR, device=DEVICES.SYS,params= PARAMS_INFO, translation_key="install_date"),
 
     RestItem(address_write="3C00", write_bytes = 0, write_index=0, mformat=FORMATS.BUTTON, mtype=TYPES.BUTTON, device=DEVICES.SYS, params= PARAMS_CLOSE, translation_key="leakage_protection_close"),
     RestItem(address_write="3D00", write_bytes = 0, write_index=0, mformat=FORMATS.BUTTON, mtype=TYPES.BUTTON, device=DEVICES.SYS, params= PARAMS_OPEN, translation_key="leakage_protection_open"),
     RestItem(address_write="350000", write_bytes = 0, write_index=0, mformat=FORMATS.BUTTON, mtype=TYPES.BUTTON, device=DEVICES.SYS, params= PARAMS_REG, translation_key="start_regeneration"),
+
+    # RestItem(mformat=FORMATS.STATUS, mtype=TYPES.SELECT_NOIF, device=DEVICES.SYS, params= PARAMS_MASS_REFILL, resultlist=SALT_MASS, translation_key="salt_refill_mass"),
 ]
 
 REST_ST_ITEMS: list[RestItem] = [

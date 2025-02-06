@@ -50,6 +50,7 @@ class FormatConstants:
     SWITCH = "Switch"
     BUTTON = "Button"
     TIMESTAMP = "Timestamp"
+    SW_VERSION = "SW_Version"
 
 
 FORMATS = FormatConstants()
@@ -62,6 +63,7 @@ class TypeConstants:
     SENSOR = "Sensor"
     SENSOR_CALC = "Sensor_Calc"
     SELECT = "Select"
+    SELECT_NOIF = "Select_noif"
     NUMBER = "Number"
     NUMBER_RO = "Number_RO"
     SWITCH = "Switch"

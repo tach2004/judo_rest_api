@@ -6,6 +6,7 @@ from homeassistant.components.sensor import SensorEntity, SensorStateClass
 from homeassistant.components.number import NumberEntity
 from homeassistant.components.switch import SwitchEntity
 from homeassistant.components.button import ButtonEntity
+from homeassistant.components.select import SelectEntity
 from homeassistant.core import callback
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity import Entity
@@ -77,7 +78,7 @@ class MyEntity(Entity):
         self._rest_api = rest_api
 
         match self._rest_item.format:
-            case FORMATS.STATUS | FORMATS.TEXT | FORMATS.TIMESTAMP:
+            case FORMATS.STATUS | FORMATS.TEXT | FORMATS.TIMESTAMP | FORMATS.SW_VERSION:
                 self._divider = 1
             case _:
                 # default state class to record all entities by default
@@ -265,6 +266,50 @@ class MyButtonEntity(CoordinatorEntity, ButtonEntity, MyEntity):  # pylint: disa
         """Turn the entity on."""
         ro = RestObject(self._rest_api, self._rest_item)
         await ro.setvalue()  # rest_item.state will be set inside ro.setvalue
+
+    @property
+    def device_info(self) -> DeviceInfo:
+        """Return device info."""
+        return MyEntity.my_device_info(self)
+
+
+class MySelectEntity(CoordinatorEntity, SelectEntity, MyEntity):  # pylint: disable=W0223
+    """Class that represents a sensor entity.
+
+    Class that represents a sensor entity derived from Sensorentity
+    and decorated with general parameters from MyEntity
+    """
+
+    def __init__(
+        self,
+        config_entry: MyConfigEntry,
+        rest_item: RestItem,
+        coordinator: MyCoordinator,
+        idx,
+    ) -> None:
+        """Initialze MySelectEntity."""
+        super().__init__(coordinator, context=idx)
+        self._idx = idx
+
+        MyEntity.__init__(self, config_entry, rest_item, coordinator.rest_api)
+
+        # option list build from the status list of the ModbusItem
+        self.options = []
+        for _useless, item in enumerate(self._rest_item.resultlist):
+            self.options.append(item.translation_key)
+        self._attr_current_option = "FEHLER"
+
+    async def async_select_option(self, option: str) -> None:
+        """Write the selected option to modbus and refresh HA."""
+        self._rest_item.state = option
+        self._attr_current_option = self._rest_item.state
+        self.async_write_ha_state()
+
+    @callback
+    def _handle_coordinator_update(self) -> None:
+        """Handle updated data from the coordinator."""
+        self._attr_current_option = self._rest_item.state
+        self.async_write_ha_state()
 
     @property
     def device_info(self) -> DeviceInfo:

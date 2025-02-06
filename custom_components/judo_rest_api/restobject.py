@@ -68,6 +68,9 @@ class RestAPI:
 
     async def get_rest(self, command: str):
         """get raw response from REST api"""
+        if command is None:
+            return None
+
         response = None
         try:
             log.debug("Send command %s", command)
@@ -99,6 +102,11 @@ class RestAPI:
 
     async def set_rest(self, command: str, towrite: str):
         """write raw response to REST api"""
+        if command is None:
+            return None
+        if towrite is None:
+            return None
+
         try:
             url = self._api_url + command + towrite
             response = await self._hass.async_add_executor_job(
@@ -166,7 +174,7 @@ class RestObject:
             return little_endian
         big_endian = bytes.fromhex(buffer)[::1].hex()
         return big_endian
-    
+
     def format_int_message(self, number: int, flip) -> str:
         """format int message as hex buffer to be sent to REST APPI"""
         numbytes = str(self._rest_item.write_bytes * 2)
@@ -208,6 +216,11 @@ class RestObject:
                 return None
             case FORMATS.NUMBER:
                 return float(int(little_endian, 16) / self._divider)
+            case FORMATS.SW_VERSION:
+                major = str(int(little_endian[0:2], 16))
+                minor = str(int(little_endian[2:4], 16)).zfill(2)
+                letter = str(bytearray.fromhex(little_endian[4:6]).decode())
+                return str(major + "." + minor + letter)
             case FORMATS.TIMESTAMP:
                 return str(datetime.fromtimestamp(int(big_endian, 16)))
             case FORMATS.TEXT:
@@ -234,6 +247,7 @@ class RestObject:
         towrite = None
         if self._rest_api is None:
             return
+
         if self._rest_item.type == TYPES.SENSOR:
             return
         if self._rest_item.format is FORMATS.BUTTON:
