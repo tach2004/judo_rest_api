@@ -25,6 +25,7 @@ Add this repository to HACS.
 * Enter the following repository URL: https://github.com/OStrama/judo_rest_api
 * Category: Integration
 * After adding the integration, restart Home Assistant.
+* Now press the button "Add Integration" in Configuration -> Integrations to install it in Home assistant.
 * Now under Configuration -> Integrations, "Judo REST API" should be available.
 
 ### Manual install
