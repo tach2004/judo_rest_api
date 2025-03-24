@@ -1,5 +1,5 @@
 # judo_rest_api
-Home Assistant integration to connect to judo water treatment directly via REST API based on this documentation:
+Home Assistant integration to connect to judo zewa/prom isafe directly via REST API based on this documentation:
 https://judo.eu/app/uploads/2024/11/API-KOMMANDOZEILEN.pdf
 Some more basic info can be found here: https://judo.eu/app/downloads/files/de/8203521/manuals/1702574_202405.pdf
 
