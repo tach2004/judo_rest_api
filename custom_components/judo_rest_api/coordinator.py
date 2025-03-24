@@ -53,6 +53,10 @@ class MyCoordinator(DataUpdateCoordinator):
 
         if rest_item.format is FORMATS.BUTTON:
             return None
+        if rest_item.format is FORMATS.NUMBER_WO:
+            return None
+        if rest_item.format is FORMATS.STATUS_WO:
+            return None
         ro = RestObject(self._rest_api, rest_item)
         if ro is None:
             log.warning("RestObject is None for Item %s", rest_item.translation_key)
