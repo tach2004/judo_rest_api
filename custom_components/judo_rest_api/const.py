@@ -44,14 +44,15 @@ class FormatConstants:
     """Format constants."""
 
     NUMBER = "number"
+    NUMBER_WO = "number_wo" #When a number value should only be written to API and not read
     TEXT = "text"
-    STATUS = "status"
+    STATUS = "status" 
+    STATUS_WO = "status_wo"  #When a select value should only be written to API and not read
     UNKNOWN = "unknown"
     SWITCH = "Switch"
     BUTTON = "Button"
     TIMESTAMP = "Timestamp"
     SW_VERSION = "SW_Version"
-
 
 FORMATS = FormatConstants()
 
