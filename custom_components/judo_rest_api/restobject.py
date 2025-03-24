@@ -70,7 +70,6 @@ class RestAPI:
         """get raw response from REST api"""
         if command is None:
             return None
-
         response = None
         try:
             log.debug("Send command %s", command)
@@ -100,13 +99,17 @@ class RestAPI:
             log.warning("Judo REST API call failed with %s", status)
             return None
 
+    async def write_value(self, command: str, payload: bytes):  #NEU
+        """Write a payload to the REST API."""
+        hex_payload = payload.hex().upper()
+        await self.set_rest(command, hex_payload)               #BIS hier neu
+
     async def set_rest(self, command: str, towrite: str):
         """write raw response to REST api"""
-        if command is None:
-            return None
-        if towrite is None:
-            return None
-
+        if command is None: 
+            return None     
+        if towrite is None: 
+            return None     
         try:
             url = self._api_url + command + towrite
             response = await self._hass.async_add_executor_job(
@@ -167,7 +170,7 @@ class RestObject:
         if self._rest_item.params is not None:
             self._divider = self._rest_item.params.get("divider", 1)
 
-    def order_hex_buffer(self, buffer: str, flip) -> str:
+    def order_hex_buffer(self, buffer: str, flip) -> str:    
         """brings a hex buffer in the right order"""
         if flip is True:
             little_endian = bytes.fromhex(buffer)[::-1].hex()
@@ -191,6 +194,10 @@ class RestObject:
         if self._rest_api is None:
             return None
         if self._rest_item.format is FORMATS.BUTTON:
+            return None
+        if self._rest_item.format is FORMATS.NUMBER_WO:
+            return None
+        if self._rest_item.format is FORMATS.STATUS_WO:
             return None
 
         res = await self._rest_api.get_rest(self._rest_item.address_read)
@@ -247,7 +254,6 @@ class RestObject:
         towrite = None
         if self._rest_api is None:
             return
-
         if self._rest_item.type == TYPES.SENSOR:
             return
         if self._rest_item.format is FORMATS.BUTTON:
@@ -265,9 +271,15 @@ class RestObject:
                 return
             case FORMATS.NUMBER:
                 towrite = self.format_int_message(int(int(value) * self._divider), True)
+            case FORMATS.NUMBER_WO:
+                towrite = self.format_int_message(int(int(value) * self._divider), True)
             case FORMATS.TEXT:
                 towrite = self.format_str_message((value), True)
             case FORMATS.STATUS:
+                towrite = self.format_int_message(
+                    self._rest_item.get_number_from_translation_key(value), True
+                )
+            case FORMATS.STATUS_WO:
                 towrite = self.format_int_message(
                     self._rest_item.get_number_from_translation_key(value), True
                 )
