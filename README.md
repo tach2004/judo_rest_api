@@ -17,7 +17,7 @@ https://judo.eu/produkte/connectivity-modul-wlan/
 
 # Judo_rest_api
 
-This integration lets you monitor and control your Judo water treatment device locally through it's REST API.
+This integration lets you monitor and control your Judo Zewa/Prom iSafe device locally through it's REST API.
 ![grafik](https://github.com/user-attachments/assets/00aa6478-ae79-459e-af3e-e2a2ebef6f26)
 
 
