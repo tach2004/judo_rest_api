@@ -78,7 +78,7 @@ class MyEntity(Entity):
         self._rest_api = rest_api
 
         match self._rest_item.format:
-            case FORMATS.STATUS | FORMATS.TEXT | FORMATS.TIMESTAMP | FORMATS.SW_VERSION:
+            case FORMATS.STATUS |FORMATS.STATUS_WO | FORMATS.TEXT | FORMATS.TIMESTAMP | FORMATS.SW_VERSION:
                 self._divider = 1
             case _:
                 # default state class to record all entities by default
@@ -177,6 +177,8 @@ class MyNumberEntity(CoordinatorEntity, NumberEntity, MyEntity):  # pylint: disa
         self._idx = idx
         self._coordinator = coordinator
         MyEntity.__init__(self, config_entry, rest_item, coordinator.rest_api)
+        
+        self._attr_mode = "box"  # Setzt die Eingabebox statt des Sliders
 
     @callback
     def _handle_coordinator_update(self) -> None:
@@ -186,9 +188,9 @@ class MyNumberEntity(CoordinatorEntity, NumberEntity, MyEntity):  # pylint: disa
 
     async def async_set_native_value(self, value: float) -> None:
         """Send value over modbus and refresh HA."""
+        # Ensure we are dealing with the correct translation keys
         ro = RestObject(self._rest_api, self._rest_item)
         await ro.setvalue(value)  # rest_item.state will be set inside ro.setvalue
-        #        await self._coordinator.get_value(self._rest_item)
         self._attr_native_value = self._rest_item.state
         self.async_write_ha_state()
 
@@ -275,11 +277,9 @@ class MyButtonEntity(CoordinatorEntity, ButtonEntity, MyEntity):  # pylint: disa
 
 class MySelectEntity(CoordinatorEntity, SelectEntity, MyEntity):  # pylint: disable=W0223
     """Class that represents a sensor entity.
-
     Class that represents a sensor entity derived from Sensorentity
     and decorated with general parameters from MyEntity
     """
-
     def __init__(
         self,
         config_entry: MyConfigEntry,
@@ -287,12 +287,10 @@ class MySelectEntity(CoordinatorEntity, SelectEntity, MyEntity):  # pylint: disa
         coordinator: MyCoordinator,
         idx,
     ) -> None:
-        """Initialze MySelectEntity."""
+        """Initialize MySelectEntity."""
         super().__init__(coordinator, context=idx)
         self._idx = idx
-
         MyEntity.__init__(self, config_entry, rest_item, coordinator.rest_api)
-
         # option list build from the status list of the ModbusItem
         self.options = []
         for _useless, item in enumerate(self._rest_item.resultlist):
@@ -301,16 +299,61 @@ class MySelectEntity(CoordinatorEntity, SelectEntity, MyEntity):  # pylint: disa
 
     async def async_select_option(self, option: str) -> None:
         """Write the selected option to modbus and refresh HA."""
-        self._rest_item.state = option
-        self._attr_current_option = self._rest_item.state
-        self.async_write_ha_state()
+
+        def get_numeric_value(translation_key):
+            """Helper function to get the numeric value from the translation key"""
+            for item in self._rest_item.resultlist:
+                if item.translation_key == translation_key:
+                    return item.number
+            raise ValueError(f"Translation key '{translation_key}' not found in resultlist")
+
+        if self._rest_item.translation_key in ["absence_limit_max_waterflowrate", "absence_limit_max_water_flow", "absence_limit_max_waterflow_time"]:
+            # Read the current values directly from the entities
+            try:
+                current_values = {
+                    "absence_limit_max_waterflowrate": get_numeric_value(self._rest_item.state),
+                    "absence_limit_max_water_flow": get_numeric_value(self._rest_item.state),
+                    "absence_limit_max_waterflow_time": get_numeric_value(self._rest_item.state),
+                }
+            except ValueError as e:
+                log.error(e)
+                return
+
+            # Update the specific value that changed
+            current_values[self._rest_item.translation_key] = get_numeric_value(option)
+
+            # Validate that all current values are non-negative integers
+            for key, value in current_values.items():
+                if value < 0:
+                    log.error(f"Value for '{key}' is negative: {value}")
+                    return
+
+            # Convert the values to Little Endian and combine into a single 6-byte payload
+            payload = (
+                current_values["absence_limit_max_waterflowrate"].to_bytes(2, 'little') +
+                current_values["absence_limit_max_water_flow"].to_bytes(2, 'little') +
+                current_values["absence_limit_max_waterflow_time"].to_bytes(2, 'little')
+            )
+
+            # Write the combined payload to the device
+            await self.coordinator.rest_api.write_value("5F00", payload)
+            self._attr_native_value = option
+            self.async_write_ha_state()
+
+        else:
+            ro = RestObject(self._rest_api, self._rest_item)
+            await ro.setvalue(option)  # Use the RestObject setvalue method
+            # Update the entity's state with the new value
+            self._rest_item.state = option
+            self._attr_current_option = self._rest_item.state
+            self.async_write_ha_state()
 
     @callback
     def _handle_coordinator_update(self) -> None:
         """Handle updated data from the coordinator."""
         self._attr_current_option = self._rest_item.state
         self.async_write_ha_state()
-
+    
     @property
     def device_info(self) -> DeviceInfo:
         """Return device info."""
