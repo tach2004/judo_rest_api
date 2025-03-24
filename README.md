@@ -1,6 +1,6 @@
 # Origin
 This integration was originally developed through the excellent work of  https://github.com/OStrama/judo_rest_api.git.
-The code was heavily modified, extended and adapted to new requirements by tach2004.
+The code was heavily modified, extended and adapted to the JUDO ZEWA/PROM iSafe by tach2004.
 
 # judo_rest_api
 Home Assistant integration to connect to Judo Zewa/Prom iSafe directly via REST API based on this documentation:
@@ -29,7 +29,7 @@ This integration lets you monitor and control your Judo water treatment device l
 
 Add this repository to HACS.
 * In the HACS GUI, select "Custom repositories"
-* Enter the following repository URL: https://github.com/OStrama/judo_rest_api
+* Enter the following repository URL: https://github.com/tach2004/judo_rest_api
 * Category: Integration
 * After adding the integration, restart Home Assistant.
 * Now press the button "Add Integration" in Configuration -> Integrations to install it in Home assistant.
