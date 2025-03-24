@@ -1,5 +1,13 @@
+# Origin
+This integration was originally developed through the excellent work of  https://github.com/OStrama/judo_rest_api.git.
+The code was heavily modified, extended and adapted to new requirements by tach2004.
+
 # judo_rest_api
-Home Assistant integration to connect to judo zewa/prom isafe directly via REST API based on this documentation:
+Home Assistant integration to connect to Judo Zewa/Prom iSafe directly via REST API based on this documentation:
+
+This integration is based on the outstanding work of https://github.com/OStrama/judo_rest_api.git
+Thanks to his work that I can also try to integrate the Judo Zewa/Prom iSafe into Homeassistant.
+
 https://judo.eu/app/uploads/2024/11/API-KOMMANDOZEILEN.pdf
 Some more basic info can be found here: https://judo.eu/app/downloads/files/de/8203521/manuals/1702574_202405.pdf
 
@@ -11,7 +19,6 @@ https://judo.eu/produkte/connectivity-modul-wlan/
 
 This integration lets you monitor and control your Judo water treatment device locally through it's REST API.
 ![image](https://github.com/user-attachments/assets/50a6e267-7844-46cf-a449-fa1fdc747504)
-
 
 
 
@@ -61,6 +68,5 @@ The "Scan interval" determines how often the REST API is polled. The default val
 # Disclaimer
 The developers of this integration are not affiliated with Judo. They have created the integration as open source in their spare time on the basis of publicly accessible information. 
 The use of the integration is at the user's own risk and responsibility. The developers are not liable for any damages arising from the use of the integration.
-
 
 More coming soon to this theater ;-)
