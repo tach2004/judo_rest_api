@@ -1,12 +1,12 @@
 {
   "domain": "judo_rest_api",
   "name": "Judo Rest API",
-  "codeowners": ["@OStrama"],
+  "codeowners": ["@tach2004"],
   "config_flow": true,
-  "documentation": "https://github.com/OStrama/judo_rest_api/",
+  "documentation": "https://github.com/tach2004/judo_rest_api/",
   "iot_class": "local_polling",
-  "issue_tracker": "https://github.com/OStrama/judo_rest_api/issues",
+  "issue_tracker": "https://github.com/tach2004/judo_rest_api/issues",
   "loggers": ["judo_rest_api"],
   "requirements": [],
-  "version": "1.0.2"
+  "version": "1.0.0"
 }
