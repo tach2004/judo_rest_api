@@ -336,12 +336,15 @@ class MySelectEntity(CoordinatorEntity, SelectEntity, MyEntity):  # pylint: disa
             # Debugging: Welche Werte wurden gesendet?
             log.debug("Gesammelte Werte für Little-Endian Umwandlung: %s", selected_values)
             log.debug("Sende Payload an Judo: %s", payload)
-
-            # Senden des kombinierten Zustands
-            await self.coordinator.rest_api.write_value("5F00", bytes.fromhex(payload))
-            self._rest_item.state = option
-            self._attr_current_option = self._rest_item.state
-            self.async_write_ha_state()
+            
+            try:
+                # Senden des kombinierten Zustands
+                await self.coordinator.rest_api.write_value("5F00", bytes.fromhex(payload))
+                self._rest_item.state = option
+                self._attr_current_option = self._rest_item.state
+                self.async_write_ha_state()
+            except Exception as e:
+                log.error("Fehler beim Senden an Judo: %s", e)
 
         else:
             ro = RestObject(self._rest_api, self._rest_item)
