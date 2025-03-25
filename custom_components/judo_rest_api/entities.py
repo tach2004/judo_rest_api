@@ -298,46 +298,49 @@ class MySelectEntity(CoordinatorEntity, SelectEntity, MyEntity):  # pylint: disa
         self._attr_current_option = "FEHLER"
 
     async def async_select_option(self, option: str) -> None:
-        """Write the selected option to modbus and refresh HA."""
+        """Aktualisiert die Auswahl der Entität und synchronisiert sie mit Home Assistant."""
 
-        def get_numeric_value(translation_key):
-            """Helper function to get the numeric value from the translation key"""
-            for item in self._rest_item.resultlist:
-                if item.translation_key == translation_key:
-                    return item.number
-            raise ValueError(f"Translation key '{translation_key}' not found in resultlist")
-
+        # Sonderfall für die 3 spezifischen Entitäten
         if self._rest_item.translation_key in ["absence_limit_max_waterflowrate", "absence_limit_max_water_flow", "absence_limit_max_waterflow_time"]:
-            # Read the current values directly from the entities
-            try:
-                current_values = {
-                    "absence_limit_max_waterflowrate": get_numeric_value(self._rest_item.state),
-                    "absence_limit_max_water_flow": get_numeric_value(self._rest_item.state),
-                    "absence_limit_max_waterflow_time": get_numeric_value(self._rest_item.state),
-                }
-            except ValueError as e:
-                log.error(e)
-                return
+            if not self.coordinator._restitems:
+                raise ValueError("coordinator._restitems ist None oder leer. Keine Entitäten zum Verarbeiten.")
 
-            # Update the specific value that changed
-            current_values[self._rest_item.translation_key] = get_numeric_value(option)
+            selected_values = {}
 
-            # Validate that all current values are non-negative integers
-            for key, value in current_values.items():
-                if value < 0:
-                    log.error(f"Value for '{key}' is negative: {value}")
-                    return
+            for item in self.coordinator._restitems:
+                if item.translation_key in ["absence_limit_max_waterflowrate", "absence_limit_max_water_flow", "absence_limit_max_waterflow_time"]:
+                    if item.translation_key == self._rest_item.translation_key:
+                        # Falls es die aktuelle Entität ist, nehmen wir den neuen Wert (option)
+                        selected_value = next(
+                            (entry.number for entry in item.resultlist if entry.translation_key == option),
+                            None
+                        )
+                    else:
+                        # Für die anderen beiden nehmen wir den alten Wert aus state
+                        selected_value = next(
+                            (entry.number for entry in item.resultlist if entry.translation_key == item.state),
+                            None
+                        )
 
-            # Convert the values to Little Endian and combine into a single 6-byte payload
-            payload = (
-                current_values["absence_limit_max_waterflowrate"].to_bytes(2, 'little') +
-                current_values["absence_limit_max_water_flow"].to_bytes(2, 'little') +
-                current_values["absence_limit_max_waterflow_time"].to_bytes(2, 'little')
-            )
+                    if selected_value is not None:
+                        selected_values[item.translation_key] = selected_value
 
-            # Write the combined payload to the device
-            await self.coordinator.rest_api.write_value("5F00", payload)
-            self._attr_native_value = option
+            # Sicherstellen, dass alle drei Werte erfasst wurden
+            if len(selected_values) != 3:
+                raise ValueError(f"Erwartet 3 Werte, aber {len(selected_values)} erhalten: {selected_values}")
+
+            # Werte in der richtigen Reihenfolge in Little-Endian umwandeln
+            ordered_keys = ["absence_limit_max_waterflowrate", "absence_limit_max_water_flow", "absence_limit_max_waterflow_time"]
+            payload = "".join([selected_values[key].to_bytes(2, byteorder="little").hex() for key in ordered_keys])
+
+            # Debugging: Welche Werte wurden gesendet?
+            log.debug("Gesammelte Werte für Little-Endian Umwandlung: %s", selected_values)
+            log.debug("Sende Payload an Judo: %s", payload)
+
+            # Senden des kombinierten Zustands
+            await self.coordinator.rest_api.write_value("5F00", bytes.fromhex(payload))
+            self._rest_item.state = option
+            self._attr_current_option = self._rest_item.state
             self.async_write_ha_state()
 
         else:
