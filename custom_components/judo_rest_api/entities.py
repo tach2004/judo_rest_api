@@ -18,6 +18,8 @@ from .coordinator import MyCoordinator
 from .items import RestItem
 from .restobject import RestAPI, RestObject
 
+from .storage import save_last_written_value, load_last_written_values, PERSISTENT_ENTITIES
+
 logging.basicConfig()
 log = logging.getLogger(__name__)
 
@@ -297,6 +299,13 @@ class MySelectEntity(CoordinatorEntity, SelectEntity, MyEntity):  # pylint: disa
             self.options.append(item.translation_key)
         self._attr_current_option = "FEHLER"
 
+        if self._rest_item.translation_key in PERSISTENT_ENTITIES:
+            stored_values = load_last_written_values()
+            if self._rest_item.translation_key in stored_values:
+                self._attr_current_option = stored_values[self._rest_item.translation_key]
+                self._rest_item.state = stored_values[self._rest_item.translation_key]
+
+
     async def async_select_option(self, option: str) -> None:
         """Aktualisiert die Auswahl der Entität und synchronisiert sie mit Home Assistant."""
 
@@ -347,6 +356,11 @@ class MySelectEntity(CoordinatorEntity, SelectEntity, MyEntity):  # pylint: disa
                 log.error("Fehler beim Senden an Judo: %s", e)
 
         else:
+            #Speichern der Werte die nur geschrieben werden
+            if self._rest_item.translation_key in PERSISTENT_ENTITIES:
+                save_last_written_value(self._rest_item.translation_key, option)
+
+            #Daten aktuallisieren und schreiben
             ro = RestObject(self._rest_api, self._rest_item)
             await ro.setvalue(option)  # Use the RestObject setvalue method
             # Update the entity's state with the new value
