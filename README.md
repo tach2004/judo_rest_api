@@ -1,12 +1,11 @@
 # Origin
 This integration was originally developed through the excellent work of  https://github.com/OStrama/judo_rest_api.git.
 The code was heavily modified, extended and adapted to the JUDO ZEWA/PROM iSafe by tach2004.
+Many thanks to his work
 
 # judo_rest_api
 Home Assistant integration to connect to Judo Zewa/Prom iSafe directly via REST API based on this documentation:
 
-This integration is based on the outstanding work of https://github.com/OStrama/judo_rest_api.git
-Thanks to his work that I can also try to integrate the Judo Zewa/Prom iSafe into Homeassistant.
 
 https://judo.eu/app/uploads/2024/11/API-KOMMANDOZEILEN.pdf
 Some more basic info can be found here: https://judo.eu/app/downloads/files/de/8203521/manuals/1702574_202405.pdf
