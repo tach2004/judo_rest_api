@@ -299,8 +299,12 @@ class MySelectEntity(CoordinatorEntity, SelectEntity, MyEntity):  # pylint: disa
             self.options.append(item.translation_key)
         self._attr_current_option = "FEHLER"
 
+    async def async_added_to_hass(self) -> None:
+        """When entity is added to hass."""
+        await super().async_added_to_hass()
+        
         if self._rest_item.translation_key in PERSISTENT_ENTITIES:
-            stored_values = load_last_written_values()
+            stored_values = await load_last_written_values(self.hass)
             if self._rest_item.translation_key in stored_values:
                 self._attr_current_option = stored_values[self._rest_item.translation_key]
                 self._rest_item.state = stored_values[self._rest_item.translation_key]
@@ -358,7 +362,7 @@ class MySelectEntity(CoordinatorEntity, SelectEntity, MyEntity):  # pylint: disa
         else:
             #Speichern der Werte die nur geschrieben werden
             if self._rest_item.translation_key in PERSISTENT_ENTITIES:
-                save_last_written_value(self._rest_item.translation_key, option)
+                await save_last_written_value(self.hass, self._rest_item.translation_key, option)
 
             #Daten aktuallisieren und schreiben
             ro = RestObject(self._rest_api, self._rest_item)
