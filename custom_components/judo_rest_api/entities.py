@@ -308,12 +308,12 @@ class MySelectEntity(CoordinatorEntity, SelectEntity, MyEntity):  # pylint: disa
             if self._rest_item.translation_key in stored_values:
                 self._attr_current_option = stored_values[self._rest_item.translation_key]
                 self._rest_item.state = stored_values[self._rest_item.translation_key]
-
+                log.debug("Geladene Werte nach If: %s", stored_values)
 
     async def async_select_option(self, option: str) -> None:
         """Aktualisiert die Auswahl der Entität und synchronisiert sie mit Home Assistant."""
 
-        # Sonderfall für die 3 spezifischen Entitäten
+        #1 special mode absence limit
         if self._rest_item.translation_key in ["absence_limit_max_waterflowrate", "absence_limit_max_water_flow", "absence_limit_max_waterflow_time"]:
             if not self.coordinator._restitems:
                 raise ValueError("coordinator._restitems ist None oder leer. Keine Entitäten zum Verarbeiten.")
@@ -351,6 +351,8 @@ class MySelectEntity(CoordinatorEntity, SelectEntity, MyEntity):  # pylint: disa
             log.debug("Sende Payload an Judo: %s", payload)
             
             try:
+                if self._rest_item.translation_key in PERSISTENT_ENTITIES:
+                    await save_last_written_value(self.hass, self._rest_item.translation_key, option)
                 # Senden des kombinierten Zustands
                 await self.coordinator.rest_api.write_value("5F00", bytes.fromhex(payload))
                 self._rest_item.state = option
@@ -358,19 +360,90 @@ class MySelectEntity(CoordinatorEntity, SelectEntity, MyEntity):  # pylint: disa
                 self.async_write_ha_state()
             except Exception as e:
                 log.error("Fehler beim Senden an Judo: %s", e)
+        
+        #2 Special mode leakageprotection
+        elif self._rest_item.translation_key in ["leakageprotection_max_waterflowrate", "leakageprotection_max_waterflow", "leakageprotection_max_waterflowtime"]:
+            if not self.coordinator._restitems:
+                raise ValueError("coordinator._restitems ist None oder leer. Keine Entitäten zum Verarbeiten.")
 
+            # Lade gespeicherte Werte
+            stored_values = await load_last_written_values(self.hass)
+            selected_values = {}
+
+            # Sammle alle benötigten Werte
+            for key in ["holiday_mode_write", "leakageprotection_max_waterflowrate", "leakageprotection_max_waterflow", "leakageprotection_max_waterflowtime"]:
+                if key == self._rest_item.translation_key:
+                    # Für die aktuelle Entity nehmen wir den neuen Wert
+                    selected_value = next(
+                        (entry.number for entry in self._rest_item.resultlist if entry.translation_key == option),
+                        None
+                    )
+                    if selected_value is not None:
+                        # Speichere den neuen Wert
+                        await save_last_written_value(self.hass, key, option)
+                        log.debug("Gespeicherter Wert oben: %s", selected_value)
+                else:
+                    # Für die anderen Entities nehmen wir den gespeicherten Wert
+                    stored_option = stored_values.get(key)
+                    if stored_option:
+                        # Finde den numerischen Wert für die gespeicherte Option
+                        for item in self.coordinator._restitems:
+                            if item.translation_key == key:
+                                selected_value = next(
+                                    (entry.number for entry in item.resultlist if entry.translation_key == stored_option),
+                                    None
+                                )
+                                break
+
+                if selected_value is not None:
+                    selected_values[key] = selected_value
+
+            # Debug Ausgabe
+            log.debug("Gesammelte Werte für Leakageprotection: %s", selected_values)
+
+            if len(selected_values) != 4:
+                raise ValueError(f"Erwartet 4 Werte, aber {len(selected_values)} erhalten: {selected_values}")
+
+            # Werte in der richtigen Reihenfolge in Little-Endian umwandeln
+            ordered_keys = ["holiday_mode_write", "leakageprotection_max_waterflowrate", "leakageprotection_max_waterflow", "leakageprotection_max_waterflowtime",]
+            #payload = "".join([selected_values[key].to_bytes(2, byteorder="little").hex() for key in ordered_keys])
+            payload = ""
+            for key in ordered_keys:
+                if key == "holiday_mode_write":
+                    payload += selected_values[key].to_bytes(1, byteorder="little").hex()
+                else:
+                    payload += selected_values[key].to_bytes(2, byteorder="little").hex()
+
+            log.debug("Sende Leakageprotection Payload an Judo: %s", payload)
+            
+            try:
+                if self._rest_item.translation_key in PERSISTENT_ENTITIES:
+                    await save_last_written_value(self.hass, self._rest_item.translation_key, option)
+                    logmeldung = (self.hass, self._rest_item.translation_key, option)
+                    log.debug("Gespeicherter Wert unten: %s", logmeldung)
+                # Senden des kombinierten Zustands
+                await self.coordinator.rest_api.write_value("5000", bytes.fromhex(payload))
+                self._rest_item.state = option
+                self._attr_current_option = self._rest_item.state
+                self.async_write_ha_state()
+            except Exception as e:
+                log.error("Fehler beim Senden an Judo: %s", e)
         else:
-            #Speichern der Werte die nur geschrieben werden
-            if self._rest_item.translation_key in PERSISTENT_ENTITIES:
-                await save_last_written_value(self.hass, self._rest_item.translation_key, option)
+            try: #Speichern der Werte die nur geschrieben werden
+                if self._rest_item.translation_key in PERSISTENT_ENTITIES:
+                    await save_last_written_value(self.hass, self._rest_item.translation_key, option)
+                    logmeldung = (self.hass, self._rest_item.translation_key, option)
+                    log.debug("Gespeicherter Wert unten ohne Sonder: %s", logmeldung)
 
-            #Daten aktuallisieren und schreiben
-            ro = RestObject(self._rest_api, self._rest_item)
-            await ro.setvalue(option)  # Use the RestObject setvalue method
-            # Update the entity's state with the new value
-            self._rest_item.state = option
-            self._attr_current_option = self._rest_item.state
-            self.async_write_ha_state()
+                #Daten aktuallisieren und schreiben
+                ro = RestObject(self._rest_api, self._rest_item)
+                await ro.setvalue(option)  # Use the RestObject setvalue method
+                # Update the entity's state with the new value
+                self._rest_item.state = option
+                self._attr_current_option = self._rest_item.state
+                self.async_write_ha_state()
+            except Exception as e:
+                log.error("Fehler beim Senden an Judo: %s", e)
 
     @callback
     def _handle_coordinator_update(self) -> None:
