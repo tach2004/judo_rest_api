@@ -50,6 +50,61 @@ UNIT_TYPE: list[StatusItem] = [
     StatusItem(number=0x3c, translation_key=  "i_fill"),
 ]
 
+LEAKAGEPROTECTION_MAX_WATERFLOWRATE_LIST: list[StatusItem] = [
+    StatusItem(number=0, translation_key="unlimited"),
+    StatusItem(number=500, translation_key="500_l_h"),
+    StatusItem(number=1000, translation_key="1000_l_h"),
+    StatusItem(number=1500, translation_key="1500_l_h"),
+    StatusItem(number=2000, translation_key="2000_l_h"),
+    StatusItem(number=2500, translation_key="2500_l_h"),
+    StatusItem(number=3000, translation_key="3000_l_h"),
+    StatusItem(number=3500, translation_key="3500_l_h"),
+    StatusItem(number=4000, translation_key="4000_l_h"),
+    StatusItem(number=4500, translation_key="4500_l_h"),
+    StatusItem(number=5000, translation_key="5000_l_h"),
+]
+
+LEAKAGEPROTECTION_MAX_WATERFLOW_LIST: list[StatusItem] = [
+    StatusItem(number=0, translation_key="unlimited"),
+    StatusItem(number=100, translation_key="100_l"),
+    StatusItem(number=200, translation_key="200_l"),
+    StatusItem(number=300, translation_key="300_l"),
+    StatusItem(number=400, translation_key="400_l"),
+    StatusItem(number=500, translation_key="500_l"),
+    StatusItem(number=600, translation_key="600_l"),
+    StatusItem(number=700, translation_key="700_l"),
+    StatusItem(number=800, translation_key="800_l"),
+    StatusItem(number=900, translation_key="900_l"),
+    StatusItem(number=1000, translation_key="1000_l"),
+    StatusItem(number=1100, translation_key="1100_l"),
+    StatusItem(number=1200, translation_key="1200_l"),
+    StatusItem(number=1300, translation_key="1300_l"),
+    StatusItem(number=1500, translation_key="1500_l"),
+    StatusItem(number=2000, translation_key="2000_l"),
+    StatusItem(number=2500, translation_key="2500_l"),
+    StatusItem(number=3000, translation_key="3000_l"),
+]
+
+LEAKAGEPROTECTION_MAX_WATERFLOWTIME_LIST: list[StatusItem] = [
+    StatusItem(number=0, translation_key="unlimited"),
+    StatusItem(number=10, translation_key="10_min"),
+    StatusItem(number=20, translation_key="20_min"),
+    StatusItem(number=30, translation_key="30_min"),
+    StatusItem(number=40, translation_key="40_min"),
+    StatusItem(number=50, translation_key="50_min"),
+    StatusItem(number=60, translation_key="60_min"),
+    StatusItem(number=75, translation_key="75_min"),
+    StatusItem(number=90, translation_key="90_min"),
+    StatusItem(number=120, translation_key="2_h"),
+    StatusItem(number=150, translation_key="2_5_h"),
+    StatusItem(number=180, translation_key="3_h"),
+    StatusItem(number=210, translation_key="3_5_h"),
+    StatusItem(number=240, translation_key="4_h"),
+    StatusItem(number=270, translation_key="4_5_h"),
+    StatusItem(number=300, translation_key="5_h"),
+]
+
+
 ABSENCE_LIMIT_MAX_WATERFLOWRATE_LIST: list[StatusItem] = [
     StatusItem(number=0, translation_key="deactivated"),
     StatusItem(number=100, translation_key="100_l_h"),
@@ -326,6 +381,9 @@ REST_SYS_ITEMS: list[RestItem] = [
     RestItem( address_write="5600", write_bytes = 1, write_index=0,  mformat=FORMATS.STATUS_WO, mtype=TYPES.SELECT_NOIF, device=DEVICES.SYS, params= PARAMS_HOLIDAY_ON, resultlist=HOLIDAY_MODE_WRITE_LIST, translation_key="holiday_mode_write"),
     RestItem( address_read="6500", read_bytes = 1, read_index=0, address_write="5B00", write_bytes = 1, write_index=0,  mformat=FORMATS.STATUS, mtype=TYPES.SELECT_NOIF, device=DEVICES.SYS, params= PARAMS_MICROLEAK, resultlist=AUTO_MICROLEAKAGECHECK_LIST, translation_key="auto_microleakage_check"),
 
+    RestItem( mformat=FORMATS.STATUS_WO, mtype=TYPES.SELECT_NOIF, device=DEVICES.SYS, params= PARAMS_FLOWRATE2, resultlist=LEAKAGEPROTECTION_MAX_WATERFLOWRATE_LIST, translation_key="leakageprotection_max_waterflowrate"),
+    RestItem( mformat=FORMATS.STATUS_WO, mtype=TYPES.SELECT_NOIF, device=DEVICES.SYS, params= PARAMS_FLOW, resultlist=LEAKAGEPROTECTION_MAX_WATERFLOW_LIST, translation_key="leakageprotection_max_waterflow"),
+    RestItem( mformat=FORMATS.STATUS_WO, mtype=TYPES.SELECT_NOIF, device=DEVICES.SYS, params= PARAMS_MINUTES2, resultlist=LEAKAGEPROTECTION_MAX_WATERFLOWTIME_LIST, translation_key="leakageprotection_max_waterflowtime"),
 #Sensor
 #    RestItem( address_read="5600", read_bytes = 2, read_index=0, mformat=FORMATS.NUMBER, mtype=TYPES.SENSOR, device=DEVICES.SYS, params= PARAMS_MASS, translation_key="salt_storage_mass"),
 #    RestItem( address_read="5600", read_bytes = 2, read_index=2, mformat=FORMATS.NUMBER, mtype=TYPES.SENSOR, device=DEVICES.SYS, params= PARAMS_DAYS,translation_key="salt_storage_days"),
