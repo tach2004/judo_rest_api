@@ -5,7 +5,7 @@ from homeassistant.core import HomeAssistant
 STORAGE_PATH = "/config/custom_components/judo_rest_api/judo_storage.json"
 
 # Liste der Entitäten, die gespeichert werden sollen (nur hier anpassen!)
-PERSISTENT_ENTITIES = ["sleep_mode_duration", "holiday_mode_write"]
+PERSISTENT_ENTITIES = ["sleep_mode_duration", "holiday_mode_write", "leakageprotection_max_waterflowrate", "leakageprotection_max_waterflow", "leakageprotection_max_waterflowtime"]
 
 async def save_last_written_value(hass: HomeAssistant, key: str, value: str) -> None:
     """Speichert den letzten geschriebenen Wert in der JSON-Datei."""
