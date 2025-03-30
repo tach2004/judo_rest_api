@@ -1,5 +1,6 @@
 # Origin
-This integration was originally developed through the excellent work of  https://github.com/OStrama/judo_rest_api.git. Many thanks to his work
+This integration was originally developed through the excellent work of  https://github.com/OStrama/judo_rest_api.git. Many thanks to his work.
+
 The code was heavily modified, extended and adapted to the JUDO ZEWA/PROM iSafe by tach2004.
 
 
