@@ -1,3 +1,6 @@
+#INFO: After installation, these values must be selected once using SELECT-OTION and sent to judo so that the file can be created. 
+#The values are then saved in Homeassitan when the integration is restarted or updated 
+
 import json
 import os
 from homeassistant.core import HomeAssistant
