@@ -173,6 +173,66 @@
                     "240_min": "240 minutes",
                     "300_min": "300 minutes"
                 }  
+            },
+            "leakageprotection_max_waterflowrate": {
+                "name": "leakageprotection max waterflowrate",
+                "state": {
+                    "unlimited": "unlimited",
+                    "500_l_h": "500 l/h",
+                    "1000_l_h": "1000 l/h",
+                    "1500_l_h": "1500 l/h",
+                    "2000_l_h": "2000 l/h",
+                    "2500_l_h": "2500 l/h",
+                    "3000_l_h": "3000 l/h",
+                    "3500_l_h": "3500 l/h",
+                    "4000_l_h": "4000 l/h",
+                    "4500_l_h": "4500 l/h",
+                    "5000_l_h": "5000 l/h"
+                }
+            },
+            "leakageprotection_max_waterflow": {
+                "name": "Leakageprotection max waterflow",
+                "state": {
+                    "unlimited": "unlimited",
+                    "100_l": "100 liters",
+                    "200_l": "200 liters",
+                    "300_l": "300 liters",
+                    "400_l": "400 liters",
+                    "500_l": "500 liters",
+                    "600_l": "600 liters",
+                    "700_l": "700 liters",
+                    "800_l": "800 liters",
+                    "900_l": "900 liters",
+                    "1000_l": "1000 liters",
+                    "1100_l": "1100 liters",
+                    "1200_l": "1200 liters",
+                    "1300_l": "1300 liters",
+                    "1500_l": "1500 liters",
+                    "2000_l": "2000 liters",
+                    "2500_l": "2500 liters",
+                    "3000_l": "3000 liters"
+                }    
+            },
+            "leakageprotection_max_waterflowtime": {
+                "name": "Leakageprotection max waterflow time",
+                "state": {
+                    "unlimited": "unlimited",
+                    "10_min": "10 minutes",
+                    "20_min": "20 minutes",
+                    "30_min": "30 minutes",
+                    "40_min": "40 minutes",
+                    "50_min": "50 minutes",
+                    "60_min": "60 minutes",
+                    "75_min": "75 minutes",
+                    "90_min": "90 minutes",
+                    "2_h": "2 hours",
+                    "2_5_h": "2.5 hours",
+                    "3_h": "3 hours",
+                    "3_5_h": "3.5 hours",
+                    "4_h": "4 hours",
+                    "4_5_h": "4.5 hours",
+                    "5_h": "5 hours"
+                }  
             }
         },
         "sensor": {
