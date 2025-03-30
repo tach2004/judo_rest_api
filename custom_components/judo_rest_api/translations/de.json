@@ -172,7 +172,67 @@
                     "240_min": "240 Minuten",
                     "300_min": "300 Minuten"
                 }  
-            }     
+            },
+            "leakageprotection_max_waterflowrate": {
+                "name": "Leckageschutz max Durchfluss L/h",
+                "state": {
+                    "unlimited": "unbegrenzt",
+                    "500_l_h": "500 l/h",
+                    "1000_l_h": "1000 l/h",
+                    "1500_l_h": "1500 l/h",
+                    "2000_l_h": "2000 l/h",
+                    "2500_l_h": "2500 l/h",
+                    "3000_l_h": "3000 l/h",
+                    "3500_l_h": "3500 l/h",
+                    "4000_l_h": "4000 l/h",
+                    "4500_l_h": "4500 l/h",
+                    "5000_l_h": "5000 l/h"
+                }
+            },
+            "leakageprotection_max_waterflow": {
+                "name": "Leckageschutz max Wassermenge L",
+                "state": {
+                    "unlimited": "unbegrenzt",
+                    "100_l": "100 Liter",
+                    "200_l": "200 Liter",
+                    "300_l": "300 Liter",
+                    "400_l": "400 Liter",
+                    "500_l": "500 Liter",
+                    "600_l": "600 Liter",
+                    "700_l": "700 Liter",
+                    "800_l": "800 Liter",
+                    "900_l": "900 Liter",
+                    "1000_l": "1000 Liter",
+                    "1100_l": "1100 Liter",
+                    "1200_l": "1200 Liter",
+                    "1300_l": "1300 Liter",
+                    "1500_l": "1500 Liter",
+                    "2000_l": "2000 Liter",
+                    "2500_l": "2500 Liter",
+                    "3000_l": "3000 Liter"
+                }    
+            },
+            "leakageprotection_max_waterflowtime": {
+                "name": "Leckageschutz max Entnahmezeit",
+                "state": {
+                    "unlimited": "unbegrenzt",
+                    "10_min": "10 Minuten",
+                    "20_min": "20 Minuten",
+                    "30_min": "30 Minuten",
+                    "40_min": "40 Minuten",
+                    "50_min": "50 Minuten",
+                    "60_min": "60 Minuten",
+                    "75_min": "75 Minuten",
+                    "90_min": "90 Minuten",
+                    "2_h": "2 Stunden",
+                    "2_5_h": "2,5 Stunden",
+                    "3_h": "3 Stunden",
+                    "3_5_h": "3,5 Stunden",
+                    "4_h": "4 Stunden",
+                    "4_5_h": "4,5 Stunden",
+                    "5_h": "5 Stunden"
+                }
+            }
         },
         "sensor": {
             "device_number": {
