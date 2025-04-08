@@ -195,6 +195,7 @@ PARAMS_FLOWRATE: dict = {
     "precision": 2,
     "unit": UnitOfVolumeFlowRate.LITERS_PER_MINUTE,
     "stateclass": SensorStateClass.MEASUREMENT,
+    "icon": "mdi:waves-arrow-right"
 }
 
 PARAMS_FLOWRATE2: dict = {
@@ -205,6 +206,7 @@ PARAMS_FLOWRATE2: dict = {
     "precision": 0,
     "unit": UnitOfVolumeFlowRate.LITERS_PER_MINUTE,
     "stateclass": SensorStateClass.MEASUREMENT,
+    "icon": "mdi:waves-arrow-right"
 }
 
 PARAMS_FLOW: dict = {
@@ -215,6 +217,7 @@ PARAMS_FLOW: dict = {
     "precision": 0,
     "unit": UnitOfVolume.LITERS,
     "stateclass": SensorStateClass.MEASUREMENT,
+    "icon": "mdi:waves"
 }
 
 PARAMS_FLOW_CM: dict = {
@@ -225,6 +228,7 @@ PARAMS_FLOW_CM: dict = {
     "precision": 3,
     "unit": UnitOfVolume.CUBIC_METERS,
     "stateclass": SensorStateClass.MEASUREMENT,
+    "icon": "mdi:water"
 }
 
 PARAMS_MASS: dict = {
@@ -360,6 +364,9 @@ PARAMS_RESET: dict = {
 PARAMS_INFO: dict = {
     "icon": "mdi:information-box-outline"
 }
+PARAMS_SWITCH_WF: dict = {
+    "icon": "mdi:toggle-switch-outline"
+}
 # pylint: disable=line-too-long
 
 # fmt: off
@@ -390,6 +397,7 @@ REST_SYS_ITEMS: list[RestItem] = [
 #    RestItem( address_read="2900", read_bytes = 4, read_index=0, mformat=FORMATS.NUMBER, mtype=TYPES.SENSOR, device=DEVICES.SYS, params= PARAMS_QBM_W, translation_key="water_treated"),
 #    RestItem( address_read="5800", read_bytes = 16, read_index=0, mformat=FORMATS.TEXT, mtype=TYPES.SENSOR, device=DEVICES.SYS, params= PARAMS_CONTACT,translation_key="service_contact"),
     RestItem( address_read="2800", read_bytes = 4, read_index=0, mformat=FORMATS.NUMBER, mtype=TYPES.SENSOR, device=DEVICES.SYS, params= PARAMS_QBM_H, translation_key="water_total"),
+    RestItem( mformat=FORMATS.NUMBER_INTERNAL, mtype=TYPES.SENSOR_CALC, device=DEVICES.SYS, params= PARAMS_FLOWRATE2, translation_key="water_flow"),
 #    RestItem( address_read="2500", read_bytes = 1, read_index=0, mformat=FORMATS.NUMBER, mtype=TYPES.SENSOR, device=DEVICES.SYS, params= PARAMS_MINUTES,translation_key="operating_minutes"),
 #    RestItem( address_read="2500", read_bytes = 1, read_index=1, mformat=FORMATS.NUMBER, mtype=TYPES.SENSOR, device=DEVICES.SYS, params= PARAMS_HOURS,translation_key="operating_hours"),
     RestItem( address_read="2500", read_bytes = 2, read_index=2, mformat=FORMATS.NUMBER, mtype=TYPES.SENSOR, device=DEVICES.SYS, params= PARAMS_DAYS,translation_key="operating_days"),
@@ -409,7 +417,8 @@ REST_SYS_ITEMS: list[RestItem] = [
     RestItem(address_write="6300", write_bytes = 0, write_index=0, mformat=FORMATS.BUTTON, mtype=TYPES.BUTTON, device=DEVICES.SYS, params= PARAMS_RESET, translation_key="message_reset"),
 
 # RestItem(mformat=FORMATS.STATUS, mtype=TYPES.SELECT_NOIF, device=DEVICES.SYS, params= PARAMS_MASS_REFILL, resultlist=SALT_MASS, translation_key="salt_refill_mass"),
-
+#Switch
+    RestItem( mformat=FORMATS.SWITCH_INTERNAL, mtype=TYPES.SWITCH, device=DEVICES.SYS, params= PARAMS_SWITCH_WF, translation_key="water_flow_check_on_off"),
 ]
 
 REST_ST_ITEMS: list[RestItem] = [
@@ -422,5 +431,3 @@ DEVICELISTS: list = [
 ]
 
 # fmt: on
-# DO
-# - Format für SW siehe GIT HUB
