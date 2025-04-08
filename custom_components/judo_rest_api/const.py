@@ -45,14 +45,17 @@ class FormatConstants:
 
     NUMBER = "number"
     NUMBER_WO = "number_wo" #When a number value should only be written to API and not read
+    NUMBER_INTERNAL = "number_internal" #Only internal Number without read and write to the api
     TEXT = "text"
     STATUS = "status" 
     STATUS_WO = "status_wo"  #When a select value should only be written to API and not read
     UNKNOWN = "unknown"
     SWITCH = "Switch"
+    SWITCH_INTERNAL = "Switch_internal" #Only internal Switch without read and write to the api
     BUTTON = "Button"
     TIMESTAMP = "Timestamp"
     SW_VERSION = "SW_Version"
+
 
 FORMATS = FormatConstants()
 
