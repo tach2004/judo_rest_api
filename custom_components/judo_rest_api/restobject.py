@@ -123,7 +123,7 @@ class RestAPI:
             res = await self._hass.async_add_executor_job(response.json)
             return res["data"]
         except Exception:
-            log.warning("Connection to Judo Water Treatment failed")
+            log.warning("Connection to Judo Zewa failed")
             return None
 
     async def connect(self):
@@ -141,7 +141,7 @@ class RestAPI:
 
     def close(self):
         """Close REST connection."""
-        log.info("Connection to judo closed")
+        log.info("Connection to Judo Zewa closed")
         return True
 
     def get_devicetype(self):
@@ -196,6 +196,10 @@ class RestObject:
         if self._rest_item.format is FORMATS.BUTTON:
             return None
         if self._rest_item.format is FORMATS.NUMBER_WO:
+            return None
+        if self._rest_item.format is FORMATS.NUMBER_INTERNAL:
+            return None
+        if self._rest_item.format is FORMATS.SWITCH_INTERNAL:
             return None
         if self._rest_item.format is FORMATS.STATUS_WO:
             return None
@@ -258,6 +262,10 @@ class RestObject:
             return
         if self._rest_item.format is FORMATS.BUTTON:
             await self._rest_api.set_rest(self._rest_item.address_write, "")
+            return
+        if self._rest_item.format is FORMATS.NUMBER_INTERNAL:
+            return
+        if self._rest_item.format is FORMATS.SWITCH_INTERNAL:
             return
         if value is None:
             return
