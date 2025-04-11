@@ -49,7 +49,7 @@
             },
             "salt_warning": {
                 "name": "Salzwarnung"
-            }  
+            }    
         },
         "button": {
             "leakage_protection_close": {
@@ -299,7 +299,15 @@
             },
             "learning_water_quantity": {
                 "name": "Lernwassermenge Rest"
-            }
+            },
+            "water_flow": {
+                "name": "Wasserdurchfluss"
+            }  
+        },
+        "switch": {
+            "water_flow_check_on_off": {
+                "name": "Wasserdurchfluss erm. an/aus"
+            }    
         }
     },
     "title": "Judo Zewa iSafe Filt"
