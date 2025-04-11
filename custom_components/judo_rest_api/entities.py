@@ -379,6 +379,7 @@ class MySelectEntity(CoordinatorEntity, SelectEntity, MyEntity):  # pylint: disa
 
             # Sammle alle benötigten Werte
             for key in ["holiday_mode_write", "leakageprotection_max_waterflowrate", "leakageprotection_max_waterflow", "leakageprotection_max_waterflowtime"]:
+                selected_value = None
                 if key == self._rest_item.translation_key:
                     # Für die aktuelle Entity nehmen wir den neuen Wert
                     selected_value = next(
