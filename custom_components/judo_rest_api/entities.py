@@ -639,7 +639,7 @@ class MyCalcSensorEntity(CoordinatorEntity, SensorEntity, MyEntity):
 #    def _handle_coordinator_update(self) -> None:
 #        """#Handle updated data from the coordinator."""
 #        current_time = time.time()
-#        raw_value = self.coordinator.get_value_from_item("water_total_test")
+#        raw_value = self.coordinator.get_value_from_item("water_total")
 #        if raw_value is not None:
 #            current_value = raw_value * 1000
 #        else:
