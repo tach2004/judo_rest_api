@@ -49,10 +49,7 @@
             },
             "salt_warning": {
                 "name": "Salt warning"
-            },
-            "water_total_test": {
-                "name": "water_total_test"
-            }      
+            }  
         },
         "button": {
             "leakage_protection_close": {
