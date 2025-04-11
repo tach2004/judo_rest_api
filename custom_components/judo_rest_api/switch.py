@@ -1,4 +1,4 @@
-"""Setting uop my sensor entities."""
+"""Setting up my sensor entities."""
 
 from __future__ import annotations
 
