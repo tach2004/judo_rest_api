@@ -1,6 +1,8 @@
 """Entity classes used in this integration"""
 
 import logging
+import time
+import asyncio
 
 from homeassistant.components.sensor import SensorEntity, SensorStateClass
 from homeassistant.components.number import NumberEntity
@@ -174,7 +176,7 @@ class MyNumberEntity(CoordinatorEntity, NumberEntity, MyEntity):  # pylint: disa
         coordinator: MyCoordinator,
         idx,
     ) -> None:
-        """Initialize NyNumberEntity."""
+        """Initialize MyNumberEntity."""
         super().__init__(coordinator, context=idx)
         self._idx = idx
         self._coordinator = coordinator
@@ -193,6 +195,7 @@ class MyNumberEntity(CoordinatorEntity, NumberEntity, MyEntity):  # pylint: disa
         # Ensure we are dealing with the correct translation keys
         ro = RestObject(self._rest_api, self._rest_item)
         await ro.setvalue(value)  # rest_item.state will be set inside ro.setvalue
+        #self._rest_item.state = value #SPÄTER AUSKOMMENTIEREN
         self._attr_native_value = self._rest_item.state
         self.async_write_ha_state()
 
@@ -203,9 +206,9 @@ class MyNumberEntity(CoordinatorEntity, NumberEntity, MyEntity):  # pylint: disa
 
 
 class MySwitchEntity(CoordinatorEntity, SwitchEntity, MyEntity):  # pylint: disable=W0223
-    """Represent a Number Entity.
+    """Represent a Switch Entity.
 
-    Class that represents a number entity derived from NumberEntity
+    Class that represents a switch entity derived from SwitchEntity
     and decorated with general parameters from MyEntity
     """
 
@@ -216,7 +219,7 @@ class MySwitchEntity(CoordinatorEntity, SwitchEntity, MyEntity):  # pylint: disa
         coordinator: MyCoordinator,
         idx,
     ) -> None:
-        """Initialize NyNumberEntity."""
+        """Initialize MySwitchEntity."""
         super().__init__(coordinator, context=idx)
         self._idx = idx
         MyEntity.__init__(self, config_entry, rest_item, coordinator.rest_api)
@@ -224,21 +227,26 @@ class MySwitchEntity(CoordinatorEntity, SwitchEntity, MyEntity):  # pylint: disa
     @callback
     def _handle_coordinator_update(self) -> None:
         """Handle updated data from the coordinator."""
-        self._attr_is_on = self._rest_item.state
+        #self._attr_is_on = self._rest_item.state   ####Wird nicht mehr durch API geupdatet!
+        self._attr_is_on = self._rest_item.state == 1   ##Ersetzt Zeile darüber weil nicht mehr über Api sondern nur intern
         self.async_write_ha_state()
 
     async def async_turn_on(self, **kwargs):
         """Turn the entity on."""
         ro = RestObject(self._rest_api, self._rest_item)
         await ro.setvalue(1)  # rest_item.state will be set inside ro.setvalue
-        self._attr_is_on = self._rest_item.state
+        self._rest_item.state = True  ####schreibt den state direkt in den coordinator ohne über die API zu lesen
+        self._attr_is_on = True ##Ersetzt Zeile darunter weil nicht mehr über Api sondern nur intern
+        #self._attr_is_on = self._rest_item.state ####Wird nicht mehr durch API geupdatet!
         self.async_write_ha_state()
 
     async def async_turn_off(self, **kwargs):
         """Turn the entity off."""
         ro = RestObject(self._rest_api, self._rest_item)
         await ro.setvalue(0)  # rest_item.state will be set inside ro.setvalue
-        self._attr_is_on = self._rest_item.state
+        self._rest_item.state = False ####schreibt den state direkt in den coordinator ohne über die API zu lesen
+        self._attr_is_on = False ##Ersetzt Zeile darunter weil nicht mehr über Api sondern nur intern
+        #self._attr_is_on = self._rest_item.state   ####Wird nicht mehr durch API geupdatet!
         self.async_write_ha_state()
 
     @property
@@ -246,11 +254,10 @@ class MySwitchEntity(CoordinatorEntity, SwitchEntity, MyEntity):  # pylint: disa
         """Return device info."""
         return MyEntity.my_device_info(self)
 
-
 class MyButtonEntity(CoordinatorEntity, ButtonEntity, MyEntity):  # pylint: disable=W0223
-    """Represent a Number Entity.
+    """Represent a Button Entity.
 
-    Class that represents a number entity derived from NumberEntity
+    Class that represents a Button entity derived from ButtonEntity
     and decorated with general parameters from MyEntity
     """
 
@@ -354,8 +361,8 @@ class MySelectEntity(CoordinatorEntity, SelectEntity, MyEntity):  # pylint: disa
                 if self._rest_item.translation_key in PERSISTENT_ENTITIES:
                     await save_last_written_value(self.hass, self._rest_item.translation_key, option)
                 # Senden des kombinierten Zustands
-                await self.coordinator.rest_api.write_value("5F00", bytes.fromhex(payload))
-                self._rest_item.state = option
+                await self.coordinator.rest_api.write_value("5000", bytes.fromhex(payload))
+                self._rest_item.state = option #schreibt den state direkt in den coordinator ohne über die API zu lesen
                 self._attr_current_option = self._rest_item.state
                 self.async_write_ha_state()
             except Exception as e:
@@ -423,7 +430,7 @@ class MySelectEntity(CoordinatorEntity, SelectEntity, MyEntity):  # pylint: disa
                     log.debug("Gespeicherter Wert unten: %s", logmeldung)
                 # Senden des kombinierten Zustands
                 await self.coordinator.rest_api.write_value("5000", bytes.fromhex(payload))
-                self._rest_item.state = option
+                self._rest_item.state = option #schreibt den state direkt in den coordinator ohne über die API zu lesen
                 self._attr_current_option = self._rest_item.state
                 self.async_write_ha_state()
             except Exception as e:
@@ -439,7 +446,7 @@ class MySelectEntity(CoordinatorEntity, SelectEntity, MyEntity):  # pylint: disa
                 ro = RestObject(self._rest_api, self._rest_item)
                 await ro.setvalue(option)  # Use the RestObject setvalue method
                 # Update the entity's state with the new value
-                self._rest_item.state = option
+                self._rest_item.state = option #schreibt den state direkt in den coordinator ohne über die API zu lesen
                 self._attr_current_option = self._rest_item.state
                 self.async_write_ha_state()
             except Exception as e:
@@ -455,3 +462,215 @@ class MySelectEntity(CoordinatorEntity, SelectEntity, MyEntity):  # pylint: disa
     def device_info(self) -> DeviceInfo:
         """Return device info."""
         return MyEntity.my_device_info(self)
+
+
+class MyCalcSensorEntity(CoordinatorEntity, SensorEntity, MyEntity):
+    """Class that represents a calculated sensor entity."""
+
+    def __init__(self, config_entry: MyConfigEntry, rest_item: RestItem, coordinator: MyCoordinator, idx) -> None:
+        """Initialize of MyCalcSensorEntity."""
+        super().__init__(coordinator, context=idx)
+        self.idx = idx
+        MyEntity.__init__(self, config_entry, rest_item, coordinator.rest_api)
+        self._previous_value = None
+        self._previous_time = None
+
+        self._polling_active = False
+        self._flow_task = None
+        self._skip_handle_update_calc = False
+        self._initial_poll_skip = False
+
+    async def _poll_water_total_task(self):
+        """Fragt water_total alle 10s ab und berechnet Durchfluss."""
+        log.debug("Starte 10s Polling für water_total")
+
+        rest_item = next((i for i in self.coordinator._restitems if i.translation_key == "water_total"), None)
+        if not rest_item:
+            log.warning("RestItem water_total nicht gefunden")
+            return
+
+        ro = RestObject(self._rest_api, rest_item)
+        #log.warn("10s Task: ro_value: %s", ro)
+
+        try:
+            while self._polling_active:
+                if self._initial_poll_skip:
+                    raw_value = self.coordinator.get_value_from_item("water_total")
+                    #log.warn("10s Task: update water_total VOM Coordinator: %s", raw_value)
+                else:
+                    raw_value = await ro.value #ruft den wert über die api ab (nur water_total!) und wandelt ihn direkt um
+                    if raw_value is not None:
+                        rest_item.state = raw_value
+                        #log.warn("10s Task: update water_total ZUM coordinator: %s", raw_value)
+
+                if raw_value is not None:
+                    current_value = raw_value * 1000
+                    #log.warn("10s Task: check raw value nach Abruf raw value: %s", current_value)
+                else:
+                    current_value = None
+
+                current_time = time.time()
+
+                if (
+                    self._previous_value is not None
+                    and current_value is not None
+                    and current_value != self._previous_value
+                ):
+                    time_diff = current_time - self._previous_time
+                    value_diff = current_value - self._previous_value
+                    flow_rate = (value_diff / time_diff) * 60
+                    self._attr_native_value = flow_rate
+                    #log.warn("10s Task: flow_rate: %s", flow_rate)
+                    #log.warn("10s Task: value_diff: %s", value_diff)
+                    #log.warn("10s Task: time_diff: %s", time_diff)
+                    self._previous_value = current_value 
+                    self._previous_time = current_time  
+                    self.async_write_ha_state() 
+                    self._initial_poll_skip = False
+
+                elif current_value == self._previous_value:
+                    log.debug("Kein Unterschied mehr bei water_total, stoppe 10s Task")
+                    self._attr_native_value = 0
+                    self._polling_active = False
+                    self._skip_handle_update_calc = False
+                    self._initial_poll_skip = False
+                    self._previous_value = current_value
+                    self._previous_time = current_time  
+                    self.async_write_ha_state() 
+                    return
+
+                #log.warn("10s:current_value: %s", current_value)
+                #log.warn("10s:previous_value: %s", self._previous_value)
+
+                await asyncio.sleep(11)
+
+        except Exception as e:
+            log.error("Fehler im 10s Task: %s", e)
+            self._polling_active = False
+            self._skip_handle_update_calc = False
+            self._initial_poll_skip = False
+
+    @callback
+    def _handle_coordinator_update(self) -> None:
+        """Handle updated data from the coordinator."""
+        current_time = time.time()
+        raw_value = self.coordinator.get_value_from_item("water_total")
+        if raw_value is not None:
+            current_value = raw_value * 1000
+        else:
+            current_value = None
+
+        #log.warn("Coordinator_start: current_time: %s", current_time)
+        #log.warn("Coordinator_start: current_value: %s", current_value)
+        #log.warn("Coordinator_start: previous_time: %s", self._previous_time)
+        #log.warn("Coordinator_start: previous_value: %s", self._previous_value)
+
+        flow_check = self.coordinator.get_value_from_item("water_flow_check_on_off")
+        #log.warn("switch status entities: %s", flow_check)
+
+        if flow_check:
+            if (
+                self._previous_value is not None
+                and current_value is not None
+                and current_value != self._previous_value
+            ):
+                # Änderung erkannt → 10s Task starten
+                if not self._polling_active:
+                    self._polling_active = True
+                    self._skip_handle_update_calc = True
+                    self._initial_poll_skip = True
+                    self._flow_task = asyncio.create_task(self._poll_water_total_task())
+                    log.debug("Änderung erkannt, wechsle zu 10s Polling-Modus")
+
+            if not self._skip_handle_update_calc:
+                # Berechnung weiterhin im coordinator erlaubt
+                if self._previous_value is not None and current_value is not None:
+                    time_diff = current_time - self._previous_time
+                    value_diff = current_value - self._previous_value
+                    flow_rate = (value_diff / time_diff) * 60
+                    self._attr_native_value = flow_rate
+                    #log.warn("Coordinator-Update: flow_rate: %s", flow_rate)
+                    #log.warn("Coordinator-Update: value_diff: %s", value_diff)
+                    #log.warn("Coordinator-Update: time_diff: %s", time_diff)
+                    self._previous_value = current_value
+                    self._previous_time = current_time 
+                    self.async_write_ha_state()
+                else:
+                    self._attr_native_value = 0
+            else:
+                log.debug("Berechnung aktuell deaktiviert (läuft über 10s-Task)")
+        else:
+            self._attr_native_value = 0 #Update mycalcsensor (water_flow)
+            self._polling_active = False
+            self._skip_handle_update_calc = False
+            self._initial_poll_skip = False
+            self._previous_value = current_value #Initialisierung ansonsten ist es none
+            self._previous_time = current_time 
+            self.async_write_ha_state() #Update mycalcsensor HA (water_flow)
+
+        #log.warn("Coordinator-Update: skip_handle_update_calc: %s", self._skip_handle_update_calc)
+        #log.warn("Coordinator-Update: polling_active: %s", self._polling_active)
+        #log.warn("Coordinator_end: current_time: %s", current_time)
+        #log.warn("Coordinator_end: current_value: %s", current_value)
+        #log.warn("Coordinator_end: previous_time: %s", self._previous_time)
+        #log.warn("Coordinator_end: previous_value: %s", self._previous_value)
+
+    @property
+    def device_info(self) -> DeviceInfo:
+        """Return device info."""
+        return MyEntity.my_device_info(self)
+
+####################################################################################
+########Alter Versuch######Update der kompletten Werte über den Coordinator#########
+####Bei Verwendung auch Code im Coordniator einblenden Zeile 118-128########
+####################################################################################
+#class MyCalcSensorEntity(CoordinatorEntity, SensorEntity, MyEntity):
+#    """Class that represents a calculated sensor entity."""
+#
+#    def __init__(self, config_entry: MyConfigEntry, rest_item: RestItem, coordinator: MyCoordinator, idx) -> None:
+#        """Initialize of MyCalcSensorEntity."""
+#        super().__init__(coordinator, context=idx)
+#        self.idx = idx
+#        MyEntity.__init__(self, config_entry, rest_item, coordinator.rest_api)
+#        self._previous_value = None
+#        self._previous_time = None
+#
+#    @callback
+#    def _handle_coordinator_update(self) -> None:
+#        """#Handle updated data from the coordinator."""
+#        current_time = time.time()
+#        raw_value = self.coordinator.get_value_from_item("water_total_test")
+#        if raw_value is not None:
+#            current_value = raw_value * 1000
+#        else:
+#            current_value = None
+#        log.debug("current_time: %s", current_time)
+#        log.debug("current_value: %s", current_value)
+#        log.debug("previous_time: %s", self._previous_time)
+#        log.debug("previous_value: %s", self._previous_value)
+#
+#        flow_check = self.coordinator.get_value_from_item("water_flow_check_on_off")
+#        log.debug("switch status entities: %s", flow_check)
+#        if flow_check:
+#            if self._previous_value is not None and current_value is not None:
+#                time_diff = current_time - self._previous_time
+#                value_diff = current_value - self._previous_value
+#                flow_rate = (value_diff / time_diff) * 60  # l/min   #Achtung wenn original dann in mynumber zeile raus!!
+#                self._attr_native_value = flow_rate
+#                log.debug("time_diff: %s", time_diff)
+#                log.debug("value_diff: %s", value_diff)
+#                log.debug("flow_rate: %s", flow_rate)
+#            else:
+#                self._attr_native_value = 0
+#
+#        else:
+#            self._attr_native_value = 0
+#        self._previous_value = current_value
+#        self._previous_time = current_time
+#        self.async_write_ha_state()
+#
+#    @property
+#    def device_info(self) -> DeviceInfo:
+#        """Return device info."""
+#        return MyEntity.my_device_info(self)
+##############################################################
