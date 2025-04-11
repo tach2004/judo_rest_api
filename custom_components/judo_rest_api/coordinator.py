@@ -47,6 +47,8 @@ class MyCoordinator(DataUpdateCoordinator):
         self._restitems = api_items
         self._number_of_items = len(api_items)
         self._config_entry = p_config_entry
+        self._previous_water_total = None
+        self._default_scan_interval = timedelta(seconds=int(p_config_entry.data[CONF.SCAN_INTERVAL]))
 
     async def get_value(self, rest_item: RestItem):
         """Read a value from the rest API"""
@@ -54,6 +56,10 @@ class MyCoordinator(DataUpdateCoordinator):
         if rest_item.format is FORMATS.BUTTON:
             return None
         if rest_item.format is FORMATS.NUMBER_WO:
+            return None
+        if rest_item.format is FORMATS.NUMBER_INTERNAL: 
+            return None
+        if rest_item.format is FORMATS.SWITCH_INTERNAL: 
             return None
         if rest_item.format is FORMATS.STATUS_WO:
             return None
@@ -109,9 +115,20 @@ class MyCoordinator(DataUpdateCoordinator):
             item = self._restitems[index]
             try:
                 await self.get_value(item)
+#                if item.translation_key == "water_total_test":
+#                    current_water_total = item.state
+#                    flow_check = self.get_value_from_item("water_flow_check_on_off")
+#                    log.debug("Wasser_total: %s", current_water_total)
+#                    if flow_check == 1 and self._previous_water_total is not None and current_water_total != self._previous_water_total:
+#                        self.update_interval = timedelta(seconds=10)
+#                        log.debug("Interval 10s")
+#                    else:
+#                        self.update_interval = self._default_scan_interval
+#                        log.debug("Interval 60s")
+#                    self._previous_water_total = current_water_total
             except Exception:
                 log.warning(
-                    "connection to Judo Water treatment failed for %s",
+                    "connection to Judo Zewa failed for %s",
                     item.translation_key,
                 )
 
@@ -131,7 +148,7 @@ class MyCoordinator(DataUpdateCoordinator):
                 # listening_idx = set(self.async_contexts())
                 return await self.fetch_data()  # !!!!!using listening_idx will result in some entities nevwer updated !!!!!
         except Exception:
-            log.warning("Error fetching Judo Water treatment data")
+            log.warning("Error fetching Judo Zewa data")
 
     @property
     def rest_api(self):
