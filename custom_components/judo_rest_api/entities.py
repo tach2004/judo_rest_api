@@ -361,7 +361,7 @@ class MySelectEntity(CoordinatorEntity, SelectEntity, MyEntity):  # pylint: disa
                 if self._rest_item.translation_key in PERSISTENT_ENTITIES:
                     await save_last_written_value(self.hass, self._rest_item.translation_key, option)
                 # Senden des kombinierten Zustands
-                await self.coordinator.rest_api.write_value("5000", bytes.fromhex(payload))
+                await self.coordinator.rest_api.write_value("5F00", bytes.fromhex(payload))
                 self._rest_item.state = option #schreibt den state direkt in den coordinator ohne über die API zu lesen
                 self._attr_current_option = self._rest_item.state
                 self.async_write_ha_state()
