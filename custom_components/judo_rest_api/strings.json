@@ -42,13 +42,16 @@
             "name": "Judo Unknown{postfix}"
         }
     },
-    "entity": {
+    "entity": { 
         "number": {
             "water_hardeness": {
                 "name": "Water hardeness"
             },
             "salt_warning": {
                 "name": "Salt warning"
+            },
+            "water_total_test": {
+                "name": "water_total_test"
             }      
         },
         "button": {
@@ -299,7 +302,15 @@
             },
             "learning_water_quantity": {
                 "name": "learning water quantity"
-            }
+            },
+            "water_flow": {
+                "name": "water_flow"
+            } 
+        },
+        "switch": {
+            "water_flow_check_on_off": {
+                "name": "water_flow_check_on_off"
+            }    
         }
     },
     "title": "Judo Zewa iSafe Filt"
