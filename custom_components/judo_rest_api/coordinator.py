@@ -115,7 +115,7 @@ class MyCoordinator(DataUpdateCoordinator):
             item = self._restitems[index]
             try:
                 await self.get_value(item)
-#                if item.translation_key == "water_total_test":
+#                if item.translation_key == "water_total":
 #                    current_water_total = item.state
 #                    flow_check = self.get_value_from_item("water_flow_check_on_off")
 #                    log.debug("Wasser_total: %s", current_water_total)
