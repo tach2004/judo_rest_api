@@ -3,6 +3,7 @@
 import logging
 import time
 import asyncio
+import collections
 
 from homeassistant.components.sensor import SensorEntity, SensorStateClass
 from homeassistant.components.number import NumberEntity
@@ -480,6 +481,7 @@ class MyCalcSensorEntity(CoordinatorEntity, SensorEntity, MyEntity):
         self._flow_task = None
         self._skip_handle_update_calc = False
         self._initial_poll_skip = False
+        self._flow_history = collections.deque(maxlen=3) #Mittelwertbildung über X Werte
 
     async def _poll_water_total_task(self):
         """Fragt water_total alle 10s ab und berechnet Durchfluss."""
@@ -497,20 +499,23 @@ class MyCalcSensorEntity(CoordinatorEntity, SensorEntity, MyEntity):
             while self._polling_active:
                 if self._initial_poll_skip:
                     raw_value = self.coordinator.get_value_from_item("water_total")
-                    #log.warn("10s Task: update water_total VOM Coordinator: %s", raw_value)
+                    log.debug("10s Task: update water_total VOM Coordinator: %s", raw_value)
                 else:
                     raw_value = await ro.value #ruft den wert über die api ab (nur water_total!) und wandelt ihn direkt um
                     if raw_value is not None:
                         rest_item.state = raw_value
-                        #log.warn("10s Task: update water_total ZUM coordinator: %s", raw_value)
+                        log.debug("10s Task: update water_total ZUM coordinator: %s", raw_value)
 
                 if raw_value is not None:
                     current_value = raw_value * 1000
-                    #log.warn("10s Task: check raw value nach Abruf raw value: %s", current_value)
+                    #log.debug("10s Task: check raw value nach Abruf: %s", current_value)
                 else:
                     current_value = None
 
                 current_time = time.time()
+
+                log.debug("10s:current_value: %s", current_value)
+                log.debug("10s:previous_value: %s", self._previous_value)
 
                 if (
                     self._previous_value is not None
@@ -520,14 +525,24 @@ class MyCalcSensorEntity(CoordinatorEntity, SensorEntity, MyEntity):
                     time_diff = current_time - self._previous_time
                     value_diff = current_value - self._previous_value
                     flow_rate = (value_diff / time_diff) * 60
-                    self._attr_native_value = flow_rate
-                    #log.warn("10s Task: flow_rate: %s", flow_rate)
-                    #log.warn("10s Task: value_diff: %s", value_diff)
-                    #log.warn("10s Task: time_diff: %s", time_diff)
+
+                    # Mittelwertbildung
+                    self._flow_history.append(flow_rate)
+                    if len(self._flow_history) > 1:
+                        avg_flow = sum(self._flow_history) / len(self._flow_history)
+                        self._attr_native_value = avg_flow
+                        log.debug("10s Task: avg_flow: %s", avg_flow)
+                    else:
+                        self._attr_native_value = flow_rate  # erster Wert ungeglättet
+
+                    #self._attr_native_value = flow_rate
+                    log.debug("10s Task: flow_rate: %s", flow_rate)
+                    log.debug("10s Task: value_diff: %s", value_diff)
+                    log.debug("10s Task: time_diff: %s", time_diff)
                     self._previous_value = current_value 
                     self._previous_time = current_time  
-                    self.async_write_ha_state() 
                     self._initial_poll_skip = False
+                    self.async_write_ha_state() 
 
                 elif current_value == self._previous_value:
                     log.debug("Kein Unterschied mehr bei water_total, stoppe 10s Task")
@@ -536,12 +551,10 @@ class MyCalcSensorEntity(CoordinatorEntity, SensorEntity, MyEntity):
                     self._skip_handle_update_calc = False
                     self._initial_poll_skip = False
                     self._previous_value = current_value
-                    self._previous_time = current_time  
+                    self._previous_time = current_time
+                    self._flow_history.clear()  # Verlauf Mittelwertbildung zurücksetzen  
                     self.async_write_ha_state() 
                     return
-
-                #log.warn("10s:current_value: %s", current_value)
-                #log.warn("10s:previous_value: %s", self._previous_value)
 
                 await asyncio.sleep(11)
 
@@ -550,6 +563,7 @@ class MyCalcSensorEntity(CoordinatorEntity, SensorEntity, MyEntity):
             self._polling_active = False
             self._skip_handle_update_calc = False
             self._initial_poll_skip = False
+            self._flow_history.clear()   # Verlauf Mittelwertbildung zurücksetzen 
 
     @callback
     def _handle_coordinator_update(self) -> None:
