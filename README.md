@@ -18,8 +18,7 @@ https://judo.eu/produkte/connectivity-modul-wlan/
 # Judo_rest_api
 
 This integration lets you monitor and control your Judo Zewa/Prom iSafe device locally through it's REST API.
-![grafik](https://github.com/user-attachments/assets/2372eddd-ffba-46d5-816c-43958857549a)
-
+![grafik](https://github.com/user-attachments/assets/2bcd6122-dfc9-4143-b52f-b8cba2eb82df)
 
 
 ## Installation
