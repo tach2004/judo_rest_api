@@ -1,3 +1,17 @@
+# Repository Archived
+This repository is no longer actively maintained. Development has moved to a new repository due to significant deviations from the original project.
+
+## New Repository JUDO-ZEWA-iSafe-Rest-API
+Please visit the new repository for further updates and development:
+https://github.com/tach2004/JUDO-ZEWA-iSafe-Rest-API
+
+## Why was this repository archived?
+The project has evolved significantly and no longer aligns with the goals of the original fork. To ensure a clearer development path and better maintainability, a standalone repository was created.
+
+------------------------------
+------------------------------
+------------------------------
+
 # Origin
 This integration was originally developed through the excellent work of  https://github.com/OStrama/judo_rest_api.git. Many thanks to his work.
 
